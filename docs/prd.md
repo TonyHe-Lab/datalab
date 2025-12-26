@@ -2,6 +2,9 @@
 
 ---
 
+> NOTE: 本 PRD 已被拆分为多个碎片文件，位于 `docs/prd_shards/` 目录下。为了便于编辑与评审，建议在需要时打开对应分片文件。  
+> Shards: `docs/prd_shards/00-overview.md`, `docs/prd_shards/01-goals.md`, `docs/prd_shards/02-requirements.md`, `docs/prd_shards/03-ui-design.md`, `docs/prd_shards/04-technical-constraints.md`, `docs/prd_shards/05-epics.md`
+
 执行指令: doc-out  
 目标文件: docs/prd.md
 
