@@ -15,3 +15,6 @@ flake8>=6.0.0
 # Optional/AI dependencies (for future stories)
 openai>=1.0.0
 spacy>=3.7.0
+
+# From PR #2/#3 (already included above)
+# psycopg2-binary>=2.9

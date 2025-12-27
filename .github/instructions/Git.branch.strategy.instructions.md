@@ -1,3 +1,6 @@
+---
+applyTo: '**'
+---
 **Git/GitHub 分支管理指南**：
 
 ### 1. 核心策略：GitHub Flow (Simplified)

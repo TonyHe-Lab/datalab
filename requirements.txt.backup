@@ -1,0 +1,3 @@
+psycopg2-binary>=2.9
+# Optional: add tooling used by scripts
+# e.g., click, requests

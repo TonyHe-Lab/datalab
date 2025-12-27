@@ -3,16 +3,16 @@
 -- Create pgvector extension if available (requires superuser)
 CREATE EXTENSION IF NOT EXISTS vector;
 -- maintenance_logs
-CREATE TABLE IF NOT EXISTS maintenance_logs (
+CREATE TABLE IF NOT EXISTS notification_longtext (
     id SERIAL PRIMARY KEY,
-    snowflake_id TEXT UNIQUE,
+    noti_id TEXT UNIQUE,
     raw_text TEXT NOT NULL,
     last_modified TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 -- ai_extracted_data
 CREATE TABLE IF NOT EXISTS ai_extracted_data (
     id SERIAL PRIMARY KEY,
-    log_id INTEGER NOT NULL REFERENCES maintenance_logs(id) ON DELETE CASCADE,
+    noti_id INTEGER NOT NULL REFERENCES maintenance_logs(id) ON DELETE CASCADE,
     component TEXT,
     fault TEXT,
     cause TEXT,

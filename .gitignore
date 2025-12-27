@@ -18,27 +18,6 @@ env/
 .venv/
 .env/
 
-# OS files
-.DS_Store
-Thumbs.db
-
-# IDEs
-.vscode/
-.idea/
-*.swp
-
-# Test & coverage
-.coverage
-.tox/
-htmlcov/
-
-# Git
-*.orig
-
-# Data files
-*.csv
-*.tsv
-*.sqlite3
-*.db
-*.h5
-*.parquet
+# From PR #2/#3
+Github-branch.md
+.env
