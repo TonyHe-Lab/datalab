@@ -1,0 +1,29 @@
+name: PII Detection Tests
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  pii-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Setup spaCy model
+        run: |
+          bash scripts/setup_spacy.sh en_core_web_sm
+      - name: Generate synthetic PII fixtures
+        run: |
+          python tools/generate_pii_synthetic.py --count 500 --out tests/fixtures/pii_synthetic_samples_large.jsonl
+      - name: Run PII tests
+        run: |
+          pytest tests/ai/test_pii_detector.py -q

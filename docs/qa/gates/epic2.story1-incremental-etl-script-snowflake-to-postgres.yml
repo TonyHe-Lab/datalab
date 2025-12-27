@@ -1,0 +1,81 @@
+---
+epic: 2
+story: 1
+id: epic2.story1-incremental-etl-script-snowflake-to-postgres
+reviewer: Quinn (QA Test Architect)
+date: 2025-12-28
+decision: CONCERNS
+summary: |
+  The incremental ETL story is well designed and covers AC-1..AC-6 with implementations and tests.
+  Two blocking concerns remain that need validation before a PASS can be issued: CI test execution strategy for Snowflake/Postgres and clarity/consistency of the Postgres client (sync vs async).
+concerns:
+  - id: CI-mock-postgres
+    description: |
+      Tests referencing Snowflake and Postgres exist, but the repository must demonstrate how CI will run them reliably.
+      Provide a CI job or documentation showing Snowflake connectors are mocked in CI and Postgres integration tests run against ephemeral Postgres (testcontainers or docker-compose) so tests are deterministic in CI.
+  - id: postgres-client-clarity
+    description: |
+      The docs mention `psycopg3` and async operations in places. Confirm whether the codebase uses synchronous psycopg v3 APIs or an async client (asyncpg / psycopg async API). If only sync APIs are implemented, update docs and requirements to avoid confusion and ensure tests run accordingly.
+recommendations:
+  - Add a CI workflow (GitHub Actions) that runs unit tests with Snowflake connectors mocked (pytest + pytest-mock) and runs integration tests against an ephemeral Postgres instance (testcontainers-python or docker-compose).
+  - Add a smoke test that runs the ETL in a dry-run mode using fixtures from `tests/fixtures/` and an ephemeral DB to validate idempotency quickly in PRs.
+  - Clarify and pin the Postgres client library in `requirements.txt` and documentation. If async paths are required, add `pytest-asyncio` tests and CI steps.
+pass_criteria: |
+  - CI demonstrates unit tests run with Snowflake mocks and integration tests run against ephemeral Postgres.
+  - Documentation and requirements consistently state which Postgres client and sync/async model is used.
+artifacts:
+  - path: docs/stories/2.1.Incremental-ETL-Script-Snowflake-to-Postgres.md
+    note: Story file with QA Results (this review)
+  - path: tests/
+    note: Unit and integration tests referenced by the story
+actions_required:
+  - Create or point to a CI workflow that executes ETL tests with mocks and ephemeral DB
+  - Update docs/requirements to clearly state the Postgres client and whether async is used
+  - Add a lightweight smoke test for dry-run idempotency
+status: blocking
+notes: |
+  Non-blocking suggestions include adding `etl_metadata` migration SQL to `db/` and a documented migration command; adding structured metrics emission to a file/target accessible in CI logs would also aid verification.
+---
+---
+epic: 2
+story: 1
+slug: incremental-etl-script-snowflake-to-postgres
+reviewer: Quinn
+date: 2025-12-28
+decision: CONCERNS
+
+nfr_validation:
+  - item: Postgres client consistency
+    status: CONCERN
+    notes: "Story references psycopg3 and async operations. Confirm which client is implemented and ensure test coverage for async paths or update docs to reflect sync implementation."
+  - item: CI test environment
+    status: CONCERN
+    notes: "Provide CI configuration showing mocked Snowflake connectors and an ephemeral Postgres instance (testcontainers or docker-compose) used for integration tests."
+
+functional_validation:
+  - item: AC-1 Snowflake connections
+    status: PASS (design)
+    notes: "Connection options and parameters documented; unit tests claimed. Validate in CI against mocks."
+  - item: AC-2 Incremental extraction
+    status: PASS (design)
+    notes: "Watermark approach documented; ensure etl_metadata migration included in db/ and migration docs."
+  - item: AC-3 Idempotent loading
+    status: PASS (design)
+    notes: "UPSERT logic described. Unit tests expected to validate idempotency."
+  - item: AC-4 Error handling & retries
+    status: PASS (design)
+    notes: "Exponential backoff and logging described; tests should simulate transient failures."
+  - item: AC-5 Monitoring & logging
+    status: PASS (design)
+    notes: "Metrics keys specified; verify logs written to configurable target in runtime."
+  - item: AC-6 Config via env
+    status: PASS
+    notes: ".env.example present and config loader referenced."
+
+overall_notes: |
+  The implementation appears complete from a design and documentation perspective. Before granting a PASS gate, please:
+  1. Add CI proof (workflow snippet) showing how tests run with Snowflake mocked and Postgres available.
+  2. Clarify the Postgres client library and async/sync usage in code and tests.
+
+recommendation: "Block merge until the two concerns above are addressed; otherwise this story is high-quality and ready to pass." 
+---
