@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# Test & coverage
+.coverage
+.tox/
+htmlcov/
+
+# Git
+*.orig
+
+# Data files
+*.csv
+*.tsv
+*.sqlite3
+*.db
+*.h5
+*.parquet

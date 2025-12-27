@@ -1,0 +1,10 @@
+{"id": "large-0001", "text": "Patient: Alice Johnson, DOB: 1975-03-22, phone: 555-000-0001, email: alice.j@example.com", "pii": ["Alice Johnson", "1975-03-22", "555-000-0001", "alice.j@example.com"]}
+{"id": "large-0002", "text": "Contact info: +1-202-555-0002; Name: Bob Lee; SSN: 987-65-4321.", "pii": ["+1-202-555-0002", "Bob Lee", "987-65-4321"]}
+{"id": "large-0003", "text": "Routine maintenance, no PII present.", "pii": []}
+{"id": "large-0004", "text": "患者: 张伟, ID: Z-112233, 电话: 010-55550003, 邮箱: zhangw@example.cn", "pii": ["张伟", "Z-112233", "010-55550003", "zhangw@example.cn"]}
+{"id": "large-0005", "text": "Encounter: MRN 00020005; phone (555) 555-0005; address: 55 2nd St.", "pii": ["00020005", "(555) 555-0005", "55 2nd St."]}
+{"id": "large-0006", "text": "Patient: Carla O'Neil, DOB 1968-07-07, phone: +44 20 7946 0006", "pii": ["Carla O'Neil", "1968-07-07", "+44 20 7946 0006"]}
+{"id": "large-0007", "text": "Note: patient ID 00020007; contact: 555-000-0007; email: c7@example.com", "pii": ["00020007", "555-000-0007", "c7@example.com"]}
+{"id": "large-0008", "text": "No PII — equipment check OK.", "pii": []}
+{"id": "large-0009", "text": "Patient: Óscar Núñez, phone: +34 600 00 0009, email: oscar.n@example.es", "pii": ["Óscar Núñez", "+34 600 00 0009", "oscar.n@example.es"]}
+{"id": "large-0010", "text": "Encounter MRN: 00020010; SSN: 111-22-3333; contact: 555-000-0010", "pii": ["00020010", "111-22-3333", "555-000-0010"]}
