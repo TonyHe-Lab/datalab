@@ -1,0 +1,26 @@
+name: WSL Verify
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_frontend:
+        description: 'Run frontend install (pnpm/npm)'
+        required: false
+        default: 'false'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Make verifier executable
+        run: chmod +x dev/verify_wsl_tooling.sh
+
+      - name: Run WSL tooling verifier
+        run: ./dev/verify_wsl_tooling.sh
+        env:
+          # Optional secrets for networked checks (set in repo settings if used)
+          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
