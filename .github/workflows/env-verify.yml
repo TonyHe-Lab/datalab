@@ -1,0 +1,15 @@
+name: Env Verify
+on: [workflow_dispatch]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run env verify
+        run: |
+          chmod +x ./dev/verify_env.sh || true
+          ./dev/verify_env.sh
+        env:
+          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
