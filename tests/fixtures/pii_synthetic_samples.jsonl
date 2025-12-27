@@ -1,0 +1,5 @@
+{"id": "sample-001", "text": "Patient John Doe, DOB 1980-01-01, phone 555-123-4567, email john.doe@example.com", "pii": ["John Doe", "1980-01-01", "555-123-4567", "john.doe@example.com"]}
+{"id": "sample-002", "text": "Contact: +1 (202) 555-0182. Name: Jane Smith. SSN: 123-45-6789.", "pii": ["+1 (202) 555-0182", "Jane Smith", "123-45-6789"]}
+{"id": "sample-003", "text": "No identifiable patient data here — routine maintenance log about pump calibration.", "pii": []}
+{"id": "sample-004", "text": "Patient: 王小明, ID: A-987654, phone: 010-55551234, email: wangxm@example.cn", "pii": ["王小明", "A-987654", "010-55551234", "wangxm@example.cn"]}
+{"id": "sample-005", "text": "Encounter note: patient MRN 00012345; contact: (555)555-9999; address: 123 Main St.", "pii": ["00012345", "(555)555-9999", "123 Main St."]}
