@@ -6,6 +6,7 @@ Exit codes:
  2 - DATABASE_URL not set
  3 - missing dependency (psycopg2)
  4 - connection or query failure
+ 5 - authentication failed (credentials rejected)
 """
 
 import os
@@ -14,11 +15,11 @@ import argparse
 # no local time usage
 
 try:
-    import psycopg2
-    from psycopg2 import OperationalError
+    import psycopg
+    from psycopg import OperationalError
 except Exception:
     print(
-        "psycopg2 is required to run this script. Install with: pip install psycopg2-binary"
+        "psycopg (psycopg3) is required to run this script. Install with: pip install 'psycopg[binary]'"
     )
     sys.exit(3)
 
@@ -44,8 +45,8 @@ def main():
         sys.exit(2)
 
     try:
-        # psycopg2 uses connect timeout via options or by setting connection string parameter
-        conn = psycopg2.connect(database_url, connect_timeout=args.timeout)
+        # psycopg uses connect_timeout as parameter
+        conn = psycopg.connect(database_url, connect_timeout=args.timeout)
         cur = conn.cursor()
         cur.execute("SELECT version();")
         version = cur.fetchone()
@@ -56,7 +57,12 @@ def main():
         print("verify_postgres_connection completed")
         sys.exit(0)
     except OperationalError as oe:
+        msg = str(oe).lower()
         print("Operational error (connection failed):", oe)
+        # Distinguish authentication failures from other connection failures when possible
+        if "auth" in msg or "password" in msg or "authentication" in msg:
+            print("Detected authentication failure")
+            sys.exit(5)
         sys.exit(4)
     except Exception as e:
         print("Connection/query failed:", e)
