@@ -35,8 +35,8 @@ def test_etl_smoke_run_with_mocked_snowflake(tmp_path, monkeypatch):
             {"notification_id": "n1", "notification_text": "sample"}
         ]
 
-        # Mock psycopg.connect to avoid real connection
-        with patch("psycopg.connect") as mock_connect:
+        # Mock psycopg2.connect to avoid real connection
+        with patch("psycopg2.connect") as mock_connect:
             mock_conn = MagicMock()
             mock_connect.return_value = mock_conn
 

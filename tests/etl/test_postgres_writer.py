@@ -18,7 +18,7 @@ class TestPostgresWriter:
         )
         self.writer = PostgresWriter(self.config)
 
-    @patch("psycopg.connect")
+    @patch("psycopg2.connect")
     def test_connect_success(self, mock_connect):
         """测试成功连接"""
         # 模拟连接
@@ -33,7 +33,7 @@ class TestPostgresWriter:
         assert self.writer.connection is mock_conn
         mock_connect.assert_called_once()
 
-    @patch("psycopg.connect")
+    @patch("psycopg2.connect")
     def test_connect_failure(self, mock_connect):
         """测试连接失败"""
         # 模拟连接失败
