@@ -1,7 +1,7 @@
 import logging
 from typing import List, Dict, Optional, Any
 import psycopg2
-from psycopg2 import errors as PostgresError
+from psycopg2 import Error as PostgresError
 
 from src.utils.config import PostgresConfig
 
