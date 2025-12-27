@@ -1,7 +1,7 @@
 import logging
 from typing import List, Dict, Optional, Any
-import psycopg2
-from psycopg2 import Error as PostgresError
+import psycopg
+from psycopg import Error as PostgresError
 
 from src.utils.config import PostgresConfig
 
@@ -13,7 +13,7 @@ class PostgresWriter:
 
     def __init__(self, config: PostgresConfig):
         self.config = config
-        self.connection: Optional[psycopg2.extensions.connection] = None
+        self.connection: Optional[psycopg.Connection] = None
 
     def connect(self) -> bool:
         """连接到 PostgreSQL"""
@@ -29,7 +29,7 @@ class PostgresWriter:
                 f"password={self.config.password}"
             )
 
-            self.connection = psycopg2.connect(conn_str)
+            self.connection = psycopg.connect(conn_str)
             logger.info("PostgreSQL 连接成功")
             return True
 

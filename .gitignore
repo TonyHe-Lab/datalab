@@ -1,3 +1,27 @@
 Github-branch.md
 
 .env
+__pycache__/
+venv/
+node_modules/
+.DS_Store
+*.pyc
+*.pyo
+*.pyd
+*.swp
+*.swo
+*.log
+*.sqlite3
+*.db
+.idea/
+.vscode/
+dist/
+build/
+coverage/
+*.egg-info/
+.env.*
+.envrc
+*.bak
+*.tmp
+*.cache
+*.ipynb_checkpoints/

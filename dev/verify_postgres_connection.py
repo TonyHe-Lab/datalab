@@ -4,7 +4,7 @@
 Exit codes:
  0 - success
  2 - DATABASE_URL not set
- 3 - missing dependency (psycopg2)
+ 3 - missing dependency (psycopg)
  4 - connection or query failure
  5 - authentication failed (credentials rejected)
 """
