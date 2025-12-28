@@ -48,7 +48,7 @@
 1. **必填字段验证**: `noti_date`, `noti_text`等
 2. **枚举验证**: `IssueType`枚举支持
 3. **自定义验证器**: 问题类型规范化、置信度范围检查
-4. **JSON字段处理**: `resolution_steps`支持多种格式
+4. **JSON字段处理**: `resolution_ai`支持多种格式
 
 ### 数据库兼容性
 - 正确处理JSON vs TEXT字段转换
