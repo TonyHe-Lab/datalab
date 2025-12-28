@@ -1,0 +1,100 @@
+{
+  "dashboard": {
+    "title": "AI Cost Monitoring Dashboard",
+    "description": "Dashboard for monitoring Azure OpenAI costs and usage",
+    "tags": ["ai", "cost", "monitoring"],
+    "style": "dark",
+    "timezone": "browser",
+    "panels": [
+      {
+        "title": "Total Cost Over Time",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(ai_cost_total)",
+            "legendFormat": "Total Cost"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "currencyUSD"
+          }
+        ]
+      },
+      {
+        "title": "Cost by Operation Type",
+        "type": "piechart",
+        "targets": [
+          {
+            "expr": "ai_cost_total",
+            "legendFormat": "{{operation_type}}"
+          }
+        ]
+      },
+      {
+        "title": "Token Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "ai_tokens_total{token_type=\"prompt\"}",
+            "legendFormat": "Prompt Tokens"
+          },
+          {
+            "expr": "ai_tokens_total{token_type=\"completion\"}",
+            "legendFormat": "Completion Tokens"
+          },
+          {
+            "expr": "ai_tokens_total{token_type=\"embedding\"}",
+            "legendFormat": "Embedding Tokens"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "title": "Request Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(ai_requests_total[5m])",
+            "legendFormat": "{{operation_type}} - {{status}}"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "reqps"
+          }
+        ]
+      },
+      {
+        "title": "Error Rate",
+        "type": "singlestat",
+        "targets": [
+          {
+            "expr": "rate(ai_errors_total[5m]) / rate(ai_requests_total[5m])",
+            "legendFormat": "Error Rate"
+          }
+        ],
+        "format": "percent"
+      },
+      {
+        "title": "Rate Limit Hits",
+        "type": "singlestat",
+        "targets": [
+          {
+            "expr": "ai_rate_limit_hits_total",
+            "legendFormat": "Rate Limit Hits"
+          }
+        ],
+        "format": "short"
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    }
+  }
+}

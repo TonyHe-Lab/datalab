@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS ai_extracted_data (
     main_component_ai TEXT,
     -- 主要组件
     main_process_ai TEXT,
-    -- 主要流程
+    -- 故障发在那个处理流程中
     -- 系统字段
     confidence_score_ai DOUBLE PRECISION,
     -- AI提取置信度

@@ -1,0 +1,186 @@
+{
+  "test_configuration": {
+    "num_requests": 10,
+    "test_date": "2025-12-28T17:52:53.705480",
+    "mock_client_config": {
+      "success_rate": 0.99,
+      "avg_latency": 0.5
+    }
+  },
+  "summary": {
+    "chat_success_rate": 1.0,
+    "embedding_success_rate": 1.0,
+    "overall_success_rate": 1.0,
+    "total_requests": 20,
+    "successful_requests": 20,
+    "failed_requests": 0
+  },
+  "latency_statistics": {
+    "chat_completion": {
+      "mean": 0.4674465894699097,
+      "median": 0.4670557975769043,
+      "p95": 0,
+      "min": 0.40015745162963867,
+      "max": 0.5341594219207764
+    },
+    "embedding_generation": {
+      "mean": 0.14266061782836914,
+      "median": 0.14069867134094238,
+      "p95": 0,
+      "min": 0.1201479434967041,
+      "max": 0.16279339790344238
+    }
+  },
+  "detailed_results": {
+    "chat_completions": [
+      {
+        "request_id": 0,
+        "type": "chat",
+        "success": true,
+        "latency": 0.46678996086120605,
+        "timestamp": "2025-12-28T17:52:47.065021"
+      },
+      {
+        "request_id": 1,
+        "type": "chat",
+        "success": true,
+        "latency": 0.40018677711486816,
+        "timestamp": "2025-12-28T17:52:47.725540"
+      },
+      {
+        "request_id": 2,
+        "type": "chat",
+        "success": true,
+        "latency": 0.5334725379943848,
+        "timestamp": "2025-12-28T17:52:48.499391"
+      },
+      {
+        "request_id": 3,
+        "type": "chat",
+        "success": true,
+        "latency": 0.46690821647644043,
+        "timestamp": "2025-12-28T17:52:49.186578"
+      },
+      {
+        "request_id": 4,
+        "type": "chat",
+        "success": true,
+        "latency": 0.40015745162963867,
+        "timestamp": "2025-12-28T17:52:49.847173"
+      },
+      {
+        "request_id": 5,
+        "type": "chat",
+        "success": true,
+        "latency": 0.5335783958435059,
+        "timestamp": "2025-12-28T17:52:50.622209"
+      },
+      {
+        "request_id": 6,
+        "type": "chat",
+        "success": true,
+        "latency": 0.47113895416259766,
+        "timestamp": "2025-12-28T17:52:51.314397"
+      },
+      {
+        "request_id": 7,
+        "type": "chat",
+        "success": true,
+        "latency": 0.40087080001831055,
+        "timestamp": "2025-12-28T17:52:51.978743"
+      },
+      {
+        "request_id": 8,
+        "type": "chat",
+        "success": true,
+        "latency": 0.5341594219207764,
+        "timestamp": "2025-12-28T17:52:52.755242"
+      },
+      {
+        "request_id": 9,
+        "type": "chat",
+        "success": true,
+        "latency": 0.46720337867736816,
+        "timestamp": "2025-12-28T17:52:53.443980"
+      }
+    ],
+    "embeddings": [
+      {
+        "request_id": 0,
+        "type": "embedding",
+        "success": true,
+        "latency": 0.1601877212524414,
+        "timestamp": "2025-12-28T17:52:47.225246"
+      },
+      {
+        "request_id": 1,
+        "type": "embedding",
+        "success": true,
+        "latency": 0.14018797874450684,
+        "timestamp": "2025-12-28T17:52:47.865763"
+      },
+      {
+        "request_id": 2,
+        "type": "embedding",
+        "success": true,
+        "latency": 0.1201479434967041,
+        "timestamp": "2025-12-28T17:52:48.619567"
+      },
+      {
+        "request_id": 3,
+        "type": "embedding",
+        "success": true,
+        "latency": 0.1602649688720703,
+        "timestamp": "2025-12-28T17:52:49.346876"
+      },
+      {
+        "request_id": 4,
+        "type": "embedding",
+        "success": true,
+        "latency": 0.1402292251586914,
+        "timestamp": "2025-12-28T17:52:49.987431"
+      },
+      {
+        "request_id": 5,
+        "type": "embedding",
+        "success": true,
+        "latency": 0.1202077865600586,
+        "timestamp": "2025-12-28T17:52:50.742444"
+      },
+      {
+        "request_id": 6,
+        "type": "embedding",
+        "success": true,
+        "latency": 0.16279339790344238,
+        "timestamp": "2025-12-28T17:52:51.477221"
+      },
+      {
+        "request_id": 7,
+        "type": "embedding",
+        "success": true,
+        "latency": 0.14116811752319336,
+        "timestamp": "2025-12-28T17:52:52.119944"
+      },
+      {
+        "request_id": 8,
+        "type": "embedding",
+        "success": true,
+        "latency": 0.12066388130187988,
+        "timestamp": "2025-12-28T17:52:52.875946"
+      },
+      {
+        "request_id": 9,
+        "type": "embedding",
+        "success": true,
+        "latency": 0.16075515747070312,
+        "timestamp": "2025-12-28T17:52:53.604767"
+      }
+    ]
+  },
+  "compliance_check": {
+    "ac_1_requirement": "Success rate >= 99%",
+    "chat_success_meets_requirement": true,
+    "embedding_success_meets_requirement": true,
+    "overall_meets_requirement": true
+  }
+}

@@ -3,3 +3,13 @@
 {"id": "sample-003", "text": "No identifiable patient data here — routine maintenance log about pump calibration.", "pii": []}
 {"id": "sample-004", "text": "Patient: 王小明, ID: A-987654, phone: 010-55551234, email: wangxm@example.cn", "pii": ["王小明", "A-987654", "010-55551234", "wangxm@example.cn"]}
 {"id": "sample-005", "text": "Encounter note: patient MRN 00012345; contact: (555)555-9999; address: 123 Main St.", "pii": ["00012345", "(555)555-9999", "123 Main St."]}
+{"id": "sample-006", "text": "Patient with multiple emails: work@company.com, personal@gmail.com and phone: 1-800-555-1234", "pii": ["work@company.com", "personal@gmail.com", "1-800-555-1234"]}
+{"id": "sample-007", "text": "Medical record: Patient ID: P-789012, Date of birth: 1995-12-31, Insurance #: INS-456789", "pii": ["P-789012", "1995-12-31", "INS-456789"]}
+{"id": "sample-008", "text": "Address variations: 1234 Elm Street, Apt 5B, New York, NY 10001 and PO Box 5678", "pii": ["1234 Elm Street, Apt 5B, New York, NY 10001", "PO Box 5678"]}
+{"id": "sample-009", "text": "International formats: Phone +44 20 7946 0958, Email: user@example.co.uk, Name: Jean Dupont", "pii": ["+44 20 7946 0958", "user@example.co.uk", "Jean Dupont"]}
+{"id": "sample-010", "text": "Credit card: 4111-1111-1111-1111, Exp: 12/25, CVV: 123", "pii": ["4111-1111-1111-1111", "12/25", "123"]}
+{"id": "sample-011", "text": "Mixed languages: 患者姓名：李四，电话：13800138000，邮箱：lisi@example.com", "pii": ["李四", "13800138000", "lisi@example.com"]}
+{"id": "sample-012", "text": "Medical terminology only: The patient presented with acute appendicitis requiring surgical intervention.", "pii": []}
+{"id": "sample-013", "text": "Partial PII: Contact us at support@ or call ***-***-**** for assistance", "pii": []}
+{"id": "sample-014", "text": "HIPAA identifiers: Medical Record Number: MRN-789, Account #: ACC-123456, Device Serial: SN-ABC123XYZ", "pii": ["MRN-789", "ACC-123456", "SN-ABC123XYZ"]}
+{"id": "sample-015", "text": "Edge case: Phone numbers with extensions: 555-123-4567 ext. 890, email with plus: user+tag@domain.com", "pii": ["555-123-4567 ext. 890", "user+tag@domain.com"]}

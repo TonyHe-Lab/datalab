@@ -1,0 +1,237 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure OpenAI Reliability Test Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: #f4f4f4; padding: 20px; border-radius: 5px; margin-bottom: 30px; }
+        .section { margin-bottom: 30px; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { color: green; font-weight: bold; }
+        .failure { color: red; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #f4f4f4; }
+        .metric-card { 
+            display: inline-block; 
+            width: 200px; 
+            padding: 15px; 
+            margin: 10px; 
+            border-radius: 5px; 
+            background: #f9f9f9; 
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .metric-value { font-size: 24px; font-weight: bold; margin: 10px 0; }
+        .compliance-pass { background-color: #d4edda; border-color: #c3e6cb; }
+        .compliance-fail { background-color: #f8d7da; border-color: #f5c6cb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Azure OpenAI Reliability Test Report</h1>
+            <p>Test Date: 2025-12-28T17:52:53.705480</p>
+            <p>Number of Requests: 10 per operation type</p>
+        </div>
+        
+        <div class="section">
+            <h2>Summary</h2>
+            <div style="display: flex; flex-wrap: wrap;">
+                <div class="metric-card">
+                    <div>Chat Success Rate</div>
+                    <div class="metric-value">100.00%</div>
+                </div>
+                <div class="metric-card">
+                    <div>Embedding Success Rate</div>
+                    <div class="metric-value">100.00%</div>
+                </div>
+                <div class="metric-card">
+                    <div>Overall Success Rate</div>
+                    <div class="metric-value">100.00%</div>
+                </div>
+                <div class="metric-card">
+                    <div>Total Requests</div>
+                    <div class="metric-value">20</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section compliance-pass">
+            <h2>Compliance Check (AC-1)</h2>
+            <p><strong>Requirement:</strong> Success rate >= 99%</p>
+            <table>
+                <tr>
+                    <th>Operation</th>
+                    <th>Success Rate</th>
+                    <th>Meets Requirement</th>
+                    <th>Status</th>
+                </tr>
+                <tr>
+                    <td>Chat Completion</td>
+                    <td>100.00%</td>
+                    <td>Yes</td>
+                    <td class="success">
+                        PASS
+                    </td>
+                </tr>
+                <tr>
+                    <td>Embedding Generation</td>
+                    <td>100.00%</td>
+                    <td>Yes</td>
+                    <td class="success">
+                        PASS
+                    </td>
+                </tr>
+            </table>
+            <p><strong>Overall Status:</strong> 
+                <span class="success">
+                    PASS
+                </span>
+            </p>
+        </div>
+        
+        <div class="section">
+            <h2>Latency Statistics (seconds)</h2>
+            <h3>Chat Completion</h3>
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+                <tr><td>Mean</td><td>0.467s</td></tr>
+                <tr><td>Median</td><td>0.467s</td></tr>
+                <tr><td>95th Percentile</td><td>0.000s</td></tr>
+                <tr><td>Minimum</td><td>0.400s</td></tr>
+                <tr><td>Maximum</td><td>0.534s</td></tr>
+            </table>
+            
+            <h3>Embedding Generation</h3>
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+                <tr><td>Mean</td><td>0.143s</td></tr>
+                <tr><td>Median</td><td>0.141s</td></tr>
+                <tr><td>95th Percentile</td><td>0.000s</td></tr>
+                <tr><td>Minimum</td><td>0.120s</td></tr>
+                <tr><td>Maximum</td><td>0.163s</td></tr>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2>Detailed Results</h2>
+            <p><em>Showing first 5 results of each type</em></p>
+            
+            <h3>Chat Completions</h3>
+            <table>
+                <tr>
+                    <th>Request ID</th>
+                    <th>Success</th>
+                    <th>Latency (s)</th>
+                    <th>Timestamp</th>
+                </tr>
+                
+                <tr>
+                    <td>0</td>
+                    <td class="success">Yes</td>
+                    <td>0.467</td>
+                    <td>2025-12-28T17:52:47.065021</td>
+                </tr>
+                
+                <tr>
+                    <td>1</td>
+                    <td class="success">Yes</td>
+                    <td>0.400</td>
+                    <td>2025-12-28T17:52:47.725540</td>
+                </tr>
+                
+                <tr>
+                    <td>2</td>
+                    <td class="success">Yes</td>
+                    <td>0.533</td>
+                    <td>2025-12-28T17:52:48.499391</td>
+                </tr>
+                
+                <tr>
+                    <td>3</td>
+                    <td class="success">Yes</td>
+                    <td>0.467</td>
+                    <td>2025-12-28T17:52:49.186578</td>
+                </tr>
+                
+                <tr>
+                    <td>4</td>
+                    <td class="success">Yes</td>
+                    <td>0.400</td>
+                    <td>2025-12-28T17:52:49.847173</td>
+                </tr>
+                
+            </table>
+            
+            <h3>Embeddings</h3>
+            <table>
+                <tr>
+                    <th>Request ID</th>
+                    <th>Success</th>
+                    <th>Latency (s)</th>
+                    <th>Timestamp</th>
+                </tr>
+                
+                <tr>
+                    <td>0</td>
+                    <td class="success">Yes</td>
+                    <td>0.160</td>
+                    <td>2025-12-28T17:52:47.225246</td>
+                </tr>
+                
+                <tr>
+                    <td>1</td>
+                    <td class="success">Yes</td>
+                    <td>0.140</td>
+                    <td>2025-12-28T17:52:47.865763</td>
+                </tr>
+                
+                <tr>
+                    <td>2</td>
+                    <td class="success">Yes</td>
+                    <td>0.120</td>
+                    <td>2025-12-28T17:52:48.619567</td>
+                </tr>
+                
+                <tr>
+                    <td>3</td>
+                    <td class="success">Yes</td>
+                    <td>0.160</td>
+                    <td>2025-12-28T17:52:49.346876</td>
+                </tr>
+                
+                <tr>
+                    <td>4</td>
+                    <td class="success">Yes</td>
+                    <td>0.140</td>
+                    <td>2025-12-28T17:52:49.987431</td>
+                </tr>
+                
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2>Test Configuration</h2>
+            <pre>{
+  "num_requests": 10,
+  "test_date": "2025-12-28T17:52:53.705480",
+  "mock_client_config": {
+    "success_rate": 0.99,
+    "avg_latency": 0.5
+  }
+}</pre>
+        </div>
+    </div>
+</body>
+</html>
+    
