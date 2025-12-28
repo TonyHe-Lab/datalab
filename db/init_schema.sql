@@ -71,25 +71,31 @@ CREATE TABLE IF NOT EXISTS ai_extracted_data (
     -- 外键：引用通知工单
     notification_id TEXT NOT NULL REFERENCES notification_text(notification_id) ON DELETE CASCADE,
     -- AI提取的结构化字段
-    modules_ai TEXT,
-    -- 子故障模块
-    component_ai TEXT,
-    -- 故障部件
-    fault_ai TEXT,
-    -- 故障描述
-    process_ai TEXT,
-    -- 故障流程
-    cause_ai TEXT,
+    keywords_ai JSONB,
+    -- 关键词提取
+    primary_symptom_ai TEXT,
+    -- 主要症状
+    root_cause_ai TEXT,
     -- 根本原因
-    resolution_ai JSONB,
-    -- 解决步骤（结构化JSON）
-    summary TEXT,
+    summary_ai TEXT,
     -- 摘要总结
+    solution_ai TEXT,
+    -- 解决方案
+    solution_type_ai TEXT,
+    -- 解决方案类型
+    components_ai TEXT,
+    -- 相关组件
+    processes_ai TEXT,
+    -- 相关流程
+    main_component_ai TEXT,
+    -- 主要组件
+    main_process_ai TEXT,
+    -- 主要流程
     -- 系统字段
+    confidence_score_ai DOUBLE PRECISION,
+    -- AI提取置信度
     extracted_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     -- AI提取时间
-    confidence_score DECIMAL(5, 4),
-    -- AI提取置信度（0.0000-1.0000）
     model_version TEXT -- 使用的AI模型版本
 );
 -- ============================================
@@ -145,7 +151,7 @@ END $$;
 CREATE INDEX IF NOT EXISTS notification_text_content_idx ON notification_text USING GIN (
     to_tsvector('english', coalesce(notification_text, ''))
 );
-CREATE INDEX IF NOT EXISTS ai_extracted_data_summary_idx ON ai_extracted_data USING GIN (to_tsvector('english', coalesce(summary, '')));
+CREATE INDEX IF NOT EXISTS ai_extracted_data_summary_idx ON ai_extracted_data USING GIN (to_tsvector('english', coalesce(summary_ai, '')));
 -- Vector indexes: attempt HNSW (pgvector 0.4+ supports ivfflat/hnsw depending on build)
 DO $$ BEGIN IF EXISTS (
     SELECT 1
