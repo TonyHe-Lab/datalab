@@ -214,6 +214,17 @@ CREATE TABLE IF NOT EXISTS etl_metadata (
     error_message TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    -- 新增字段用于检查点功能
+    checkpoint_data JSONB,
+    -- 存储检查点数据（如最后处理的ID、日期范围等）
+    checkpoint_timestamp TIMESTAMP WITH TIME ZONE,
+    -- 最后检查点时间
+    batch_size INTEGER DEFAULT 1000,
+    -- 批处理大小
+    total_records INTEGER DEFAULT 0,
+    -- 总记录数
+    processed_records INTEGER DEFAULT 0,
+    -- 已处理记录数
     UNIQUE(table_name)
 );
 -- Index for efficient lookups
