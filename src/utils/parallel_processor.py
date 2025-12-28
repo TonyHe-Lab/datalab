@@ -136,10 +136,11 @@ class ParallelProcessor:
                 "error_records": self.error_count,
                 "elapsed_time": elapsed_time,
                 "records_per_second": records_per_second,
-                "success_rate": (self.processed_count - self.error_count)
-                / self.processed_count
-                if self.processed_count > 0
-                else 0,
+                "success_rate": (
+                    (self.processed_count - self.error_count) / self.processed_count
+                    if self.processed_count > 0
+                    else 0
+                ),
             }
 
     def _process_batch_with_retry(

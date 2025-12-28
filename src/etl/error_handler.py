@@ -96,9 +96,9 @@ class ETLMetrics:
             "errors": self.errors,
             "batches_processed": self.batches_processed,
             "duration_seconds": round(duration, 2),
-            "records_per_second": round(self.records_processed / duration, 2)
-            if duration > 0
-            else 0,
+            "records_per_second": (
+                round(self.records_processed / duration, 2) if duration > 0 else 0
+            ),
             "start_time": self.start_time,
             "end_time": self.end_time,
         }

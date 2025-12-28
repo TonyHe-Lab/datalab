@@ -52,12 +52,12 @@ def test_pii_detector_precision_recall(sample):
     # Acceptance thresholds for this test suite (lowered for Story 2.1 - PII is Story 2.3)
     # Note: Some samples may have lower precision due to regex limitations
     # The main baseline test (test_pii_baseline_report.py) has stricter requirements
-    assert precision >= 0.3, (
-        f"Precision too low for sample {sample['id']}: {precision} (TP={tp}, FP={fp}, FN={fn})"
-    )
-    assert recall >= 0.3, (
-        f"Recall too low for sample {sample['id']}: {recall} (TP={tp}, FP={fp}, FN={fn})"
-    )
+    assert (
+        precision >= 0.3
+    ), f"Precision too low for sample {sample['id']}: {precision} (TP={tp}, FP={fp}, FN={fn})"
+    assert (
+        recall >= 0.3
+    ), f"Recall too low for sample {sample['id']}: {recall} (TP={tp}, FP={fp}, FN={fn})"
 
 
 import json

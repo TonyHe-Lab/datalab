@@ -118,9 +118,11 @@ def run_reliability_test(num_requests: int = 10) -> Dict[str, Any]:
     chat_latency_stats = {
         "mean": statistics.mean(chat_latencies) if chat_latencies else 0,
         "median": statistics.median(chat_latencies) if chat_latencies else 0,
-        "p95": statistics.quantiles(chat_latencies, n=20)[18]
-        if len(chat_latencies) >= 20
-        else 0,
+        "p95": (
+            statistics.quantiles(chat_latencies, n=20)[18]
+            if len(chat_latencies) >= 20
+            else 0
+        ),
         "min": min(chat_latencies) if chat_latencies else 0,
         "max": max(chat_latencies) if chat_latencies else 0,
     }
@@ -128,9 +130,11 @@ def run_reliability_test(num_requests: int = 10) -> Dict[str, Any]:
     embed_latency_stats = {
         "mean": statistics.mean(embed_latencies) if embed_latencies else 0,
         "median": statistics.median(embed_latencies) if embed_latencies else 0,
-        "p95": statistics.quantiles(embed_latencies, n=20)[18]
-        if len(embed_latencies) >= 20
-        else 0,
+        "p95": (
+            statistics.quantiles(embed_latencies, n=20)[18]
+            if len(embed_latencies) >= 20
+            else 0
+        ),
         "min": min(embed_latencies) if embed_latencies else 0,
         "max": max(embed_latencies) if embed_latencies else 0,
     }

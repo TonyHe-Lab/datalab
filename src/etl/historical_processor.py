@@ -323,12 +323,16 @@ class HistoricalProcessor:
             "failed_records": self.failed_records,
             "last_processed_date": datetime.now().isoformat(),
             "config": {
-                "start_date": self.backfill_config.start_date.isoformat()
-                if self.backfill_config.start_date
-                else None,
-                "end_date": self.backfill_config.end_date.isoformat()
-                if self.backfill_config.end_date
-                else None,
+                "start_date": (
+                    self.backfill_config.start_date.isoformat()
+                    if self.backfill_config.start_date
+                    else None
+                ),
+                "end_date": (
+                    self.backfill_config.end_date.isoformat()
+                    if self.backfill_config.end_date
+                    else None
+                ),
                 "batch_size": self.backfill_config.batch_size,
                 "max_records": self.backfill_config.max_records,
             },

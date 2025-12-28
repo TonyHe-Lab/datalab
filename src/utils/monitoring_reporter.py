@@ -316,9 +316,9 @@ class ReportGenerator:
                 "processed": metrics.processed_records,
                 "failed": metrics.failed_records,
                 "success_rate": f"{metrics.success_rate:.2%}",
-                "duration": str(metrics.get_elapsed_time())
-                if metrics.start_time
-                else None,
+                "duration": (
+                    str(metrics.get_elapsed_time()) if metrics.start_time else None
+                ),
                 "performance": f"{metrics.records_per_second:.1f} records/sec",
             },
             "errors": {
@@ -406,11 +406,11 @@ class ReportGenerator:
         """Analyze performance metrics."""
         analysis = {
             "throughput": f"{metrics.records_per_second:.1f} records/sec",
-            "efficiency": "high"
-            if metrics.records_per_second > 100
-            else "medium"
-            if metrics.records_per_second > 10
-            else "low",
+            "efficiency": (
+                "high"
+                if metrics.records_per_second > 100
+                else "medium" if metrics.records_per_second > 10 else "low"
+            ),
             "bottleneck_analysis": ReportGenerator._identify_bottlenecks(metrics),
         }
 
@@ -646,7 +646,7 @@ class AlertManager:
         return {
             "total_alerts": len(self.alerts_triggered),
             "alert_counts": alert_counts,
-            "recent_alerts": self.alerts_triggered[-10:]
-            if self.alerts_triggered
-            else [],
+            "recent_alerts": (
+                self.alerts_triggered[-10:] if self.alerts_triggered else []
+            ),
         }

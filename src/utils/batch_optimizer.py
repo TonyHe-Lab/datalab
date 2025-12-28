@@ -168,20 +168,28 @@ class BatchOptimizer:
             "samples": len(self.performance_history),
             "avg_performance": statistics.mean(self.performance_history),
             "median_performance": statistics.median(self.performance_history),
-            "std_performance": statistics.stdev(self.performance_history)
-            if len(self.performance_history) > 1
-            else 0,
-            "current_batch_size": self.batch_size_history[-1]
-            if self.batch_size_history
-            else self.config.optimal_batch_size,
-            "recommended_batch_size": self.optimize_batch_size(
+            "std_performance": (
+                statistics.stdev(self.performance_history)
+                if len(self.performance_history) > 1
+                else 0
+            ),
+            "current_batch_size": (
                 self.batch_size_history[-1]
                 if self.batch_size_history
-                else self.config.optimal_batch_size,
+                else self.config.optimal_batch_size
+            ),
+            "recommended_batch_size": self.optimize_batch_size(
+                (
+                    self.batch_size_history[-1]
+                    if self.batch_size_history
+                    else self.config.optimal_batch_size
+                ),
                 {
-                    "records_per_second": statistics.mean(self.performance_history)
-                    if self.performance_history
-                    else 0
+                    "records_per_second": (
+                        statistics.mean(self.performance_history)
+                        if self.performance_history
+                        else 0
+                    )
                 },
             ),
         }

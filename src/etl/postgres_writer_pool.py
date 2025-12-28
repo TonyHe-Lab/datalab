@@ -14,7 +14,6 @@ from psycopg2 import Error as PostgresError
 from contextlib import contextmanager
 
 from src.utils.config import PostgresConfig
-from src.utils.batch_optimizer import BatchOptimizer, BulkInsertStrategy, TransactionManager
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +25,13 @@ class PostgresWriterPool:
         self.config = config
         self.pool_size = pool_size
         self.connection_pool: Optional[psycopg2.pool.SimpleConnectionPool] = None
-        self.batch_optimizer = BatchOptimizer()
+
+    def initialize_pool(self) -> bool:
+        """Initialize the connection pool."""
+        try:
+            logger.info(
+                f"Initializing PostgreSQL connection pool with size {self.pool_size}"
+            )
 
             # Build connection string
             conn_str = (
