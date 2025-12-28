@@ -27,7 +27,7 @@ python -m pip install -r dev/requirements.txt
 
 4. Manage project dependencies
 
-- Add a `requirements.txt` or use `pyproject.toml` + `pip-tools`/`poetry` depending on project policy. For this repo we provide `dev/requirements.txt` for test-time utilities (e.g., `psycopg`).
+- Add a `requirements.txt` or use `pyproject.toml` + `pip-tools`/`poetry` depending on project policy. For this repo we provide `dev/requirements.txt` for test-time utilities (e.g., `psycopg2-binary` for PostgreSQL connectivity).
 - To freeze runtime dependencies: `pip freeze > requirements.txt` (only do this for apps; libraries should use a lockfile strategy).
 
 5. Deactivate when done:
