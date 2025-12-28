@@ -18,7 +18,13 @@ from ..schemas import (
     ResolutionStep,
     ResolutionStepsType,
 )
-from ..entities import MaintenanceLog, AIExtractedData
+
+try:
+    from ..entities import MaintenanceLog, AIExtractedData
+except Exception:
+    # Allow usage of schema-only transformations in environments without ORM deps
+    MaintenanceLog = object  # type: ignore
+    AIExtractedData = object  # type: ignore
 
 
 # ============================================================================

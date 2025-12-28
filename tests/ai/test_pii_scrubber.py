@@ -1,5 +1,6 @@
 import pytest
 from src.ai.pii_scrubber import detect_pii, redact_pii
+import json
 
 
 def test_detect_pii_basic():
@@ -15,3 +16,14 @@ def test_redact_pii_replaces():
     redacted, details = redact_pii(text)
     assert "[REDACTED]" in redacted
     assert details["emails"] and details["phones"]
+
+
+def test_pii_detection_on_synthetic_data():
+    with open("tests/fixtures/pii_synthetic_samples.jsonl", "r") as f:
+        for line in f:
+            sample = json.loads(line)
+            text = sample["text"]
+            expected_pii = set(sample["pii"])
+            redacted, _ = redact_pii(text)
+            for pii in expected_pii:
+                assert pii not in redacted, f"PII not redacted: {pii} in {redacted}"
