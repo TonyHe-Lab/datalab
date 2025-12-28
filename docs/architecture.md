@@ -143,11 +143,13 @@
 3. **semantic_embeddings**: 向量索引。
    - log_id (FK), vector (1536 dim, HNSW Index)。
 4. **notification_text**: 通知信息表，支持工单分类。
-   - id (PK), notification_id, notification_text, notification_time, notification_type, notification_issue_type。
+   - notification_id (PK), noti_date, noti_text, noti_issue_type, noti_trendcode_l1/l2/l3, sys_eq_id, etc.
 
-> ⚡️**2025-12-27 变更说明：**
+> ⚡️**2025-12-28 字段命名规范更新：**
 >
-> - 数据模型已扩展，`notification_text` 表新增字段 `notification_issue_type`，用于区分和标注通知/工单的具体问题类型。
+> - 所有工单相关字段使用 `noti_` 前缀（如：`noti_date`, `noti_text`, `noti_issue_type`）
+> - 所有设备相关字段使用 `sys_` 前缀（如：`sys_eq_id`, `sys_fl_id`, `sys_mat_id`）
+> - 主键字段保持原样：`notification_id`
 > - 该字段支持更精细的业务分类，有助于后续统计分析和多维度检索。
 > - ETL、Pydantic Schema 及相关业务逻辑已同步调整，详见 PRD 及 User Story。
 

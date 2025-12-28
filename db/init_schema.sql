@@ -25,11 +25,11 @@ CREATE TABLE IF NOT EXISTS notification_text (
     -- 主键：通知工单ID（来自Snowflake系统的唯一工单号）
     notification_id TEXT PRIMARY KEY,
     -- 时间相关字段
-    notification_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    noti_date TIMESTAMP WITH TIME ZONE NOT NULL,
     -- 工单通知/创建日期，用于增量同步
-    notification_assigned_date TIMESTAMP WITH TIME ZONE,
+    noti_assigned_date TIMESTAMP WITH TIME ZONE,
     -- 工单分配日期
-    notification_closed_date TIMESTAMP WITH TIME ZONE,
+    noti_closed_date TIMESTAMP WITH TIME ZONE,
     -- 工单关闭日期
     -- 分类与标识字段
     noti_category_id TEXT,
@@ -45,19 +45,19 @@ CREATE TABLE IF NOT EXISTS notification_text (
     sys_serial_id TEXT,
     -- 设备序列号
     -- 趋势代码字段
-    notification_trendcode_l1 TEXT,
+    noti_trendcode_l1 TEXT,
     -- 工单趋势代码级别1
-    notification_trendcode_l2 TEXT,
+    noti_trendcode_l2 TEXT,
     -- 工单趋势代码级别2
-    notification_trendcode_l3 TEXT,
+    noti_trendcode_l3 TEXT,
     -- 工单趋势代码级别3
     -- 问题类型字段
-    notification_issue_type TEXT,
+    noti_issue_type TEXT,
     -- 工单问题类型（如：硬件故障、软件问题、网络问题、配置错误等）
     -- 文本内容字段
-    notification_medium_text TEXT,
+    noti_medium_text TEXT,
     -- 工单保修短文本
-    notification_text TEXT NOT NULL,
+    noti_text TEXT NOT NULL,
     -- 工单维修日志长文本（AI分析的主要文本）
     -- 系统字段
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
