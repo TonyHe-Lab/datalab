@@ -3,11 +3,11 @@
 ## 主要表结构（概要）
 
 1. notification_text（通知工单主表）
-- notification_id (PK), notification_date, notification_assigned_date, notification_closed_date
+- notification_id (PK), noti_date, noti_assigned_date, noti_closed_date
 - noti_category_id, sys_eq_id, noti_country_id, sys_fl_id, sys_mat_id, sys_serial_id
-- notification_trendcode_l1, notification_trendcode_l2, notification_trendcode_l3
-- **notification_issue_type** (新增：问题类型分类，如硬件故障、软件问题等)
-- notification_medium_text, notification_text
+- noti_trendcode_l1, noti_trendcode_l2, noti_trendcode_l3
+- **noti_issue_type** (新增：问题类型分类，如硬件故障、软件问题等)
+- noti_medium_text, noti_text
 - created_at, updated_at
 
 2. ai_extracted_data（结构化知识）

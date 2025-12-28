@@ -1,160 +1,137 @@
-# 数据库字段名变更说明
+# 数据库字段命名规范
 
-## 变更概述
+## 规范概述
 
-为了更好的语义表达和业务一致性，我们对数据库字段名进行了优化：
+为了更好的语义表达和代码一致性，我们制定了统一的字段命名规范：
 
-### 主要变更
+### 命名规范原则
 
-1. **`maintenance_logs.last_modified` → `notification_date`**
-   - **原因**: `last_modified` 语义模糊，改为 `notification_date` 更符合医疗工单业务场景
-   - **影响**: 所有引用此字段的代码需要更新
-   - **迁移脚本**: `db/migrate_field_names.sql`
+1. **工单相关字段**: 使用 `noti_` 前缀（notification的缩写）
+2. **系统/设备相关字段**: 使用 `sys_` 前缀（system的缩写）
+3. **主键字段**: 保持完整名称，如 `notification_id`
+4. **时间戳字段**: 使用 `_at` 后缀，如 `created_at`, `updated_at`
 
-### 字段名保持不变的说明
+## 字段命名规范
 
-1. **`snowflake_id` 保持不变**
-   - **原因**: 这是业务键（来自Snowflake系统的原始ID），与 `log_id`（外键）语义不同
-   - `snowflake_id` = 外部系统标识符（用于数据同步）
-   - `log_id` = 数据库内部关联键（用于表间关系）
-
-2. **`log_id` 保持不变**
-   - **原因**: 作为外键引用 `maintenance_logs.id`，保持现有关系模型
-
-## 新的字段名规范
-
-### maintenance_logs 表
+### notification_text 表（通知工单主表）
 | 字段名 | 类型 | 说明 |
 |--------|------|------|
-| `id` | SERIAL PRIMARY KEY | **本地主键**，用于数据库内部关联 |
-| `snowflake_id` | TEXT UNIQUE | **Snowflake原始ID**，用于数据同步和溯源 |
-| `raw_text` | TEXT NOT NULL | **原始维护日志文本** |
-| `notification_date` | TIMESTAMP WITH TIME ZONE | **工单通知/创建日期**，用于增量同步 |
+| `notification_id` | TEXT PRIMARY KEY | **主键**，来自Snowflake系统的唯一工单号 |
+| `noti_date` | TIMESTAMP WITH TIME ZONE NOT NULL | **工单通知/创建日期**，用于增量同步 |
+| `noti_assigned_date` | TIMESTAMP WITH TIME ZONE | **工单分配日期** |
+| `noti_closed_date` | TIMESTAMP WITH TIME ZONE | **工单关闭日期** |
+| `noti_category_id` | TEXT | **工单类别编号** |
+| `noti_country_id` | TEXT | **工单国家简称** |
+| `noti_trendcode_l1` | TEXT | **工单趋势代码级别1** |
+| `noti_trendcode_l2` | TEXT | **工单趋势代码级别2** |
+| `noti_trendcode_l3` | TEXT | **工单趋势代码级别3** |
+| `noti_issue_type` | TEXT | **工单问题类型**（如：硬件故障、软件问题等） |
+| `noti_medium_text` | TEXT | **工单保修短文本** |
+| `noti_text` | TEXT NOT NULL | **工单维修日志长文本**（AI分析的主要文本） |
+| `sys_eq_id` | TEXT | **设备编号** |
+| `sys_fl_id` | TEXT | **设备场地编号** |
+| `sys_mat_id` | TEXT | **设备物料号** |
+| `sys_serial_id` | TEXT | **设备序列号** |
+| `created_at` | TIMESTAMP WITH TIME ZONE DEFAULT now() | **创建时间** |
+| `updated_at` | TIMESTAMP WITH TIME ZONE DEFAULT now() | **更新时间** |
 
-### ai_extracted_data 表
+### ai_extracted_data 表（AI提取数据表）
 | 字段名 | 类型 | 说明 |
 |--------|------|------|
 | `id` | SERIAL PRIMARY KEY | AI数据主键 |
-| `log_id` | INTEGER FK | **外键**，引用 `maintenance_logs.id` |
-| `component` | TEXT | 故障部件 |
-| `fault` | TEXT | 故障描述 |
-| `cause` | TEXT | 根本原因 |
-| `resolution` | JSONB | 解决步骤（结构化） |
-| `summary` | TEXT | 摘要总结 |
+| `notification_id` | TEXT FK | **外键**，引用 `notification_text.notification_id` |
+| `keywords_ai` | TEXT | **关键词提取** |
+| `primary_symptom_ai` | TEXT | **主要症状** |
+| `root_cause_ai` | TEXT | **根本原因** |
+| `summary_ai` | TEXT | **摘要总结** |
+| `solution_ai` | TEXT | **解决方案** |
+| `solution_type_ai` | TEXT | **解决方案类型** |
+| `components_ai` | TEXT | **相关部件** |
+| `processes_ai` | TEXT | **相关流程** |
+| `main_component_ai` | TEXT | **主要部件** |
+| `main_process_ai` | TEXT | **主要流程** |
+| `confidence_score_ai` | DECIMAL(5,4) | **置信度分数** |
+| `extracted_at` | TIMESTAMP WITH TIME ZONE | **提取时间** |
+| `model_version` | TEXT | **模型版本** |
 
-### semantic_embeddings 表
+### semantic_embeddings 表（向量索引表）
 | 字段名 | 类型 | 说明 |
 |--------|------|------|
-| `log_id` | INTEGER FK | **外键**，引用 `maintenance_logs.id` |
-| `vector` / `vector_bytea` | vector(1536) / BYTEA | 文本向量嵌入 |
+| `notification_id` | TEXT FK | **外键**，引用 `notification_text.notification_id` |
+| `source_text_ai` | TEXT | **源文本** |
+| `vector` | vector(1536) | **文本向量嵌入**（1536维） |
+| `created_at` | TIMESTAMP WITH TIME ZONE DEFAULT now() | **创建时间** |
 
-## 迁移步骤
+### etl_metadata 表（ETL元数据表）
+| 字段名 | 类型 | 说明 |
+|--------|------|------|
+| `id` | SERIAL PRIMARY KEY | 元数据主键 |
+| `table_name` | TEXT NOT NULL | **表名** |
+| `last_sync_timestamp` | TIMESTAMP WITH TIME ZONE | **最后同步时间戳** |
+| `rows_processed` | INTEGER | **处理行数** |
+| `sync_status` | TEXT | **同步状态** |
+| `error_message` | TEXT | **错误信息** |
+| `created_at` | TIMESTAMP WITH TIME ZONE DEFAULT now() | **创建时间** |
+| `updated_at` | TIMESTAMP WITH TIME ZONE DEFAULT now() | **更新时间** |
 
-### 1. 备份数据库
-```bash
-pg_dump -h localhost -U postgres datalab > datalab_backup_$(date +%Y%m%d).sql
-```
 
-### 2. 运行迁移脚本
-```bash
-psql -h localhost -U postgres -d datalab -f db/migrate_field_names.sql
-```
+## 实施状态
 
-### 3. 验证迁移结果
+### 已完成的更新
+1. ✅ 数据库Schema (`db/init_schema.sql`)
+2. ✅ Pydantic模型 (`src/models/schemas.py`)
+3. ✅ SQLAlchemy实体 (`src/models/entities.py`)
+4. ✅ 数据转换工具 (`src/models/transformations/`)
+5. ✅ 测试文件 (`tests/models/`)
+6. ✅ 架构文档 (`docs/architecture.md`)
+7. ✅ PRD文档 (`docs/prd_shards/10-data-model.md`)
+8. ✅ User Story文件 (`docs/stories/`)
+9. ✅ 数据模型重设计文档 (`docs/data-model-redesign-2025-12-27.md`)
+
+### 命名规范优势
+1. **一致性**: 统一的命名前缀提高代码可读性
+2. **语义清晰**: `noti_`前缀明确表示工单相关字段，`sys_`前缀明确表示系统/设备相关字段
+3. **易于维护**: 规范的命名减少歧义和错误
+4. **扩展性**: 为未来新增字段提供清晰的命名指导
+
+## 使用示例
+
+### SQL查询
 ```sql
--- 检查字段名是否已更新
-SELECT column_name FROM information_schema.columns 
-WHERE table_name = 'maintenance_logs' 
-    AND column_name = 'notification_date';
-
--- 应该返回: notification_date
+-- 查询特定设备的工单
+SELECT notification_id, noti_date, noti_text, noti_issue_type
+FROM notification_text
+WHERE sys_eq_id = 'EQ-001'
+ORDER BY noti_date DESC;
 ```
 
-### 4. 更新应用程序代码
-需要更新以下位置的字段引用：
-
-#### Python代码
+### Python代码
 ```python
-# 之前
-query = "SELECT * FROM maintenance_logs WHERE last_modified > %s"
+# Pydantic模型
+from src.models.schemas import MaintenanceLogCreate
 
-# 之后
-query = "SELECT * FROM maintenance_logs WHERE notification_date > %s"
+log = MaintenanceLogCreate(
+    notification_id="NOTIF-2025-001",
+    noti_date="2025-12-28T10:00:00Z",
+    noti_text="设备出现硬件故障...",
+    noti_issue_type="硬件故障",
+    sys_eq_id="EQ-001"
+)
 ```
 
-#### Pydantic模型
-```python
-# 之前
-class MaintenanceLog(BaseModel):
-    last_modified: datetime
-
-# 之后
-class MaintenanceLog(BaseModel):
-    notification_date: datetime
-```
-
-#### API响应
+### API响应
 ```json
-// 之前
 {
-  "last_modified": "2025-12-27T10:30:00Z"
-}
-
-// 之后
-{
-  "notification_date": "2025-12-27T10:30:00Z"
+  "notification_id": "NOTIF-2025-001",
+  "noti_date": "2025-12-28T10:00:00Z",
+  "noti_text": "设备出现硬件故障...",
+  "noti_issue_type": "硬件故障",
+  "sys_eq_id": "EQ-001",
+  "created_at": "2025-12-28T10:00:00Z"
 }
 ```
 
-## 影响范围
-
-### 需要更新的文件
-1. `dev/verify_db_schema.py` - ✅ 已更新
-2. 所有Story文件中的数据模型描述 - ✅ 已更新
-3. 架构文档 - ✅ 已更新
-4. PRD文档 - ✅ 已更新
-5. 未来的ETL脚本和API实现
-
-### 不需要更新的
-1. 数据库索引（自动跟随列名变更）
-2. 外键约束（保持不变）
-3. 表关系（保持不变）
-
-## 业务语义说明
-
-### notification_date 的含义
-- **医疗工单场景**: 工单创建或通知日期
-- **ETL同步**: 用于增量数据提取的时间戳
-- **业务分析**: 工单时间趋势分析的基础
-
-### 为什么不是 noti_date
-我们使用完整的 `notification_date` 而不是缩写 `noti_date`，因为：
-1. 更清晰的语义表达
-2. 符合数据库命名规范（使用完整单词）
-3. 避免歧义（noti可能被误解为其他含义）
-
-## 回滚方案
-
-如果需要回滚到旧的字段名：
-
-```sql
--- 回滚脚本
-ALTER TABLE maintenance_logs RENAME COLUMN notification_date TO last_modified;
-```
-
-## 问题排查
-
-### 常见问题
-1. **Q**: 迁移后应用程序报错 "column last_modified does not exist"
-   **A**: 更新应用程序代码中的字段引用
-
-2. **Q**: 迁移脚本执行失败
-   **A**: 检查数据库连接和权限，确保有ALTER TABLE权限
-
-3. **Q**: 数据丢失风险
-   **A**: 迁移只更改列名，不更改数据。但仍建议先备份
-
-### 技术支持
+## 技术支持
 如有问题，请参考：
 1. 数据库schema: `db/init_schema.sql`
 2. 验证脚本: `dev/verify_db_schema.py`
@@ -162,6 +139,6 @@ ALTER TABLE maintenance_logs RENAME COLUMN notification_date TO last_modified;
 
 ---
 
-**变更生效日期**: 2025-12-27  
+**规范生效日期**: 2025-12-28  
 **负责人**: 数据库架构团队  
-**状态**: ✅ 已实施
+**状态**: ✅ 已实施并测试通过

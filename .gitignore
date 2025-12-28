@@ -26,7 +26,26 @@ node_modules/
 *.orig
 *.rej
 *.log
-
+*.pyc
+.pycache/
+coverage/
+coverage.xml
+htmlcov/
+.tox/
+.nox/
+.pytest_cache/
+.mypy_cache/
+.pyre/
+.coverage
+.cache/
+nosetests.xml
+pytestdebug.log
+.ipynb_checkpoints/
+.vscode/
+*.egg-info/
+dist/
+build/
+out/    
 # Ignore build directories
 /dist/
 /build/

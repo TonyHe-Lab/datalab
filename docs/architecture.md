@@ -126,8 +126,8 @@
    FROM semantic_embeddings ORDER BY vector <=> :query_vec LIMIT 20  
   ),  
   keyword AS (  
-   SELECT log_id, 1/(60 + RANK() OVER (ORDER BY ts_rank(to_tsvector('english', raw_text), plainto_tsquery(:query_text)) DESC)) as score  
-   FROM maintenance_logs WHERE to_tsvector('english', raw_text) @@ plainto_tsquery(:query_text) LIMIT 20  
+   SELECT notification_id, 1/(60 + RANK() OVER (ORDER BY ts_rank(to_tsvector('english', noti_text), plainto_tsquery(:query_text)) DESC)) as score  
+   FROM notification_text WHERE to_tsvector('english', noti_text) @@ plainto_tsquery(:query_text) LIMIT 20  
   )  
   SELECT COALESCE(s.log_id, k.log_id) as id, (COALESCE(s.score, 0) + COALESCE(k.score, 0)) as final_score  
   FROM semantic s FULL OUTER JOIN keyword k ON s.log_id = k.log_id  
@@ -136,12 +136,12 @@
 
 ## **5. 数据模型 (Data Model)**
 
-1. **maintenance_logs**: 原始数据快照。
+1. **maintenance_logs**: ⚠️ **已弃用** - 请使用 `notification_text` 表
    - id (PK), snowflake_id (Unique), raw_text, last_modified。
 2. **ai_extracted_data**: 结构化知识。
-   - log_id (FK), component, fault, cause, resolution_steps (Text/JSON), summary。
+   - notification_id (FK), keywords_ai, primary_symptom_ai, root_cause_ai, summary_ai, etc。
 3. **semantic_embeddings**: 向量索引。
-   - log_id (FK), vector (1536 dim, HNSW Index)。
+   - notification_id (FK), source_text_ai, vector (1536 dim, HNSW Index)。
 4. **notification_text**: 通知信息表，支持工单分类。
    - notification_id (PK), noti_date, noti_text, noti_issue_type, noti_trendcode_l1/l2/l3, sys_eq_id, etc.
 

@@ -4,6 +4,14 @@
 
 为了更好的业务语义表达和系统可维护性，我们对数据库schema进行了全面的重新设计。新的数据模型采用业务导向的命名规范，统一使用`notification_id`作为主键和外键，并添加了完整的业务字段。
 
+## 字段命名规范
+
+### 命名规范原则
+1. **工单相关字段**: 使用 `noti_` 前缀（notification的缩写）
+2. **系统/设备相关字段**: 使用 `sys_` 前缀（system的缩写）
+3. **主键字段**: 保持完整名称，如 `notification_id`
+4. **时间戳字段**: 使用 `_at` 后缀，如 `created_at`, `updated_at`
+
 ## 变更摘要
 
 ### 表名变更
@@ -34,18 +42,19 @@
 |--------|--------|------|
 | `id` | ❌ 删除 | 不再使用自增ID |
 | `external_id` | `notification_id` (PK) | 业务主键，来自Snowflake |
-| `raw_text` | `notification_text` | 重命名为业务术语 |
-| `notification_date` | `notification_date` | 保持不变 |
-| ❌ 新增 | `notification_assigned_date` | 工单分配日期 |
-| ❌ 新增 | `notification_closed_date` | 工单关闭日期 |
-| ❌ 新增 | `noti_category_id` | 工单类别编号 |
-| ❌ 新增 | `sys_eq_id` | 设备编号 |
-| ❌ 新增 | `noti_country_id` | 工单国家简称 |
-| ❌ 新增 | `sys_fl_id` | 设备场地编号 |
-| ❌ 新增 | `sys_mat_id` | 设备物料号 |
-| ❌ 新增 | `sys_serial_id` | 设备序列号 |
-| ❌ 新增 | `notification_trendcode_l1/l2/l3` | 工单趋势代码 |
-| ❌ 新增 | `notification_medium_text` | 工单保修短文本 |
+| `raw_text` | `noti_text` | 重命名为业务术语，使用noti_前缀 |
+| `notification_date` | `noti_date` | 使用noti_前缀 |
+| ❌ 新增 | `noti_assigned_date` | 工单分配日期，使用noti_前缀 |
+| ❌ 新增 | `noti_closed_date` | 工单关闭日期，使用noti_前缀 |
+| ❌ 新增 | `noti_category_id` | 工单类别编号，使用noti_前缀 |
+| ❌ 新增 | `sys_eq_id` | 设备编号，使用sys_前缀 |
+| ❌ 新增 | `noti_country_id` | 工单国家简称，使用noti_前缀 |
+| ❌ 新增 | `sys_fl_id` | 设备场地编号，使用sys_前缀 |
+| ❌ 新增 | `sys_mat_id` | 设备物料号，使用sys_前缀 |
+| ❌ 新增 | `sys_serial_id` | 设备序列号，使用sys_前缀 |
+| ❌ 新增 | `noti_trendcode_l1/l2/l3` | 工单趋势代码，使用noti_前缀 |
+| ❌ 新增 | `noti_medium_text` | 工单保修短文本，使用noti_前缀 |
+| ❌ 新增 | `noti_issue_type` | 工单问题类型，使用noti_前缀 |
 
 ### 2. ai_extracted_data 表
 

@@ -23,11 +23,11 @@ Rollback:
 DROP VIEW IF EXISTS public.semantic_embeddings_info;
 DROP INDEX IF EXISTS semantic_embeddings_vector_hnsw_idx;
 DROP INDEX IF EXISTS semantic_embeddings_vector_ivfflat_idx;
-DROP INDEX IF EXISTS maintenance_logs_raw_text_idx;
-DROP INDEX IF EXISTS ai_extracted_data_summary_idx;
+DROP INDEX IF EXISTS notification_text_noti_text_idx;
+DROP INDEX IF EXISTS ai_extracted_data_summary_ai_idx;
 DROP TABLE IF EXISTS semantic_embeddings;
 DROP TABLE IF EXISTS ai_extracted_data;
-DROP TABLE IF EXISTS maintenance_logs;
+DROP TABLE IF EXISTS notification_text;
 ```
 
 CI guidance:
