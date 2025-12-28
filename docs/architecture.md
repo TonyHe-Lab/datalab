@@ -133,14 +133,23 @@
   FROM semantic s FULL OUTER JOIN keyword k ON s.log_id = k.log_id  
   ORDER BY final_score DESC LIMIT 10;
 
+
 ## **5. 数据模型 (Data Model)**
 
 1. **maintenance_logs**: 原始数据快照。
-   - id (PK), snowflake_id (Unique), raw_text, last_modified.
+   - id (PK), snowflake_id (Unique), raw_text, last_modified。
 2. **ai_extracted_data**: 结构化知识。
-   - log_id (FK), component, fault, cause, resolution_steps (Text/JSON), summary.
+   - log_id (FK), component, fault, cause, resolution_steps (Text/JSON), summary。
 3. **semantic_embeddings**: 向量索引。
-   - log_id (FK), vector (1536 dim, HNSW Index).
+   - log_id (FK), vector (1536 dim, HNSW Index)。
+4. **notification_text**: 通知信息表，支持工单分类。
+   - id (PK), notification_id, notification_text, notification_time, notification_type, notification_issue_type。
+
+> ⚡️**2025-12-27 变更说明：**
+>
+> - 数据模型已扩展，`notification_text` 表新增字段 `notification_issue_type`，用于区分和标注通知/工单的具体问题类型。
+> - 该字段支持更精细的业务分类，有助于后续统计分析和多维度检索。
+> - ETL、Pydantic Schema 及相关业务逻辑已同步调整，详见 PRD 及 User Story。
 
 ## **6. 部署与运维 (Deployment & Ops)**
 
