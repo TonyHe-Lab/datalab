@@ -51,6 +51,9 @@ CREATE TABLE IF NOT EXISTS notification_text (
     -- 工单趋势代码级别2
     notification_trendcode_l3 TEXT,
     -- 工单趋势代码级别3
+    -- 问题类型字段
+    notification_issue_type TEXT,
+    -- 工单问题类型（如：硬件故障、软件问题、网络问题、配置错误等）
     -- 文本内容字段
     notification_medium_text TEXT,
     -- 工单保修短文本
@@ -61,6 +64,22 @@ CREATE TABLE IF NOT EXISTS notification_text (
     -- 记录创建时间
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() -- 记录更新时间
 );
+-- 为已存在的表添加notification_issue_type字段（幂等性操作）
+DO $$ BEGIN -- 检查字段是否已存在
+IF NOT EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_name = 'notification_text'
+        AND column_name = 'notification_issue_type'
+) THEN -- 添加新字段
+EXECUTE 'ALTER TABLE notification_text ADD COLUMN notification_issue_type TEXT';
+RAISE NOTICE 'Added notification_issue_type column to notification_text table';
+ELSE RAISE NOTICE 'notification_issue_type column already exists in notification_text table';
+END IF;
+EXCEPTION
+WHEN others THEN RAISE NOTICE 'Could not add notification_issue_type column: %',
+SQLERRM;
+END $$;
 -- ============================================
 -- AI提取数据表 (ai_extracted_data)
 -- 存储从工单文本中AI提取的结构化信息
