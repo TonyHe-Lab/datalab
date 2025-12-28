@@ -15,6 +15,12 @@ from src.etl.snowflake_loader import SnowflakeClient
 from src.etl.postgres_writer import PostgresWriter
 from src.utils.config import SnowflakeConfig, PostgresConfig
 from src.utils.progress_tracker import ProgressTracker, BatchProcessor
+from src.utils.parallel_processor import (
+    ParallelProcessor,
+    ParallelConfig,
+    ConnectionPool,
+    MemoryOptimizer,
+)
 from src.ai.cost_tracker import CostTracker
 from src.ai.openai_client import AzureOpenAIClient
 from src.ai.text_analyzer import analyze_text
@@ -35,6 +41,12 @@ class BackfillConfig:
     enable_ai_processing: bool = True
     enable_embeddings: bool = True
     dry_run: bool = False
+    # Parallel processing configuration
+    enable_parallel_processing: bool = True
+    max_workers: int = 4
+    use_multiprocessing: bool = True
+    connection_pool_size: int = 10
+    max_memory_mb: int = 100
 
 
 class HistoricalProcessor:
@@ -691,3 +703,147 @@ class HistoricalProcessor:
             self.postgres_writer.disconnect()
 
         logger.info("Historical processor cleanup completed")
+
+    # ========== 并行处理方法 ==========
+
+    def process_with_parallel_tracking(self, resume: bool = False):
+        """使用并行处理和进度跟踪处理历史数据"""
+        if not self.backfill_config.enable_parallel_processing:
+            logger.info("并行处理已禁用，使用串行处理")
+            return self.process_with_progress_tracking(resume)
+
+        # 初始化进度跟踪器
+        progress_tracker = ProgressTracker("historical_backfill_parallel")
+
+        # 注册检查点回调
+        progress_tracker.register_callback(
+            "checkpoint",
+            lambda report: self.create_database_checkpoint(report["checkpoint_data"]),
+        )
+
+        # 如果需要恢复，加载检查点
+        if resume:
+            checkpoint_data = self.load_database_checkpoint()
+            if checkpoint_data:
+                progress_tracker.checkpoint_data = checkpoint_data
+                logger.info(f"从检查点恢复: {checkpoint_data}")
+            else:
+                logger.info("未找到检查点，开始新任务")
+
+        try:
+            # 开始处理
+            progress_tracker.start(self.total_records)
+
+            # 创建并行处理器配置
+            parallel_config = ParallelConfig(
+                max_workers=self.backfill_config.max_workers,
+                use_multiprocessing=self.backfill_config.use_multiprocessing,
+                chunk_size=self.backfill_config.batch_size,
+                timeout_seconds=300,
+                max_retries=3,
+                retry_delay=1.0,
+            )
+
+            # 使用并行处理器
+            with ParallelProcessor(parallel_config) as processor:
+                # 提取数据（使用内存优化）
+                data_generator = self.extract_historical_data()
+                optimized_generator = MemoryOptimizer.stream_large_dataset(
+                    data_generator, max_memory_mb=self.backfill_config.max_memory_mb
+                )
+
+                # 并行处理批次
+                stats = processor.process_batches_parallel(
+                    data_source=optimized_generator,
+                    process_func=self._process_batch_for_parallel,
+                    total_records=self.total_records,
+                )
+
+                # 记录统计信息
+                logger.info(f"并行处理完成: {stats}")
+
+            # 标记完成
+            self.complete_database_checkpoint()
+            progress_tracker.complete()
+
+        except Exception as e:
+            logger.error(f"并行处理失败: {e}")
+            progress_tracker.fail(str(e))
+            raise
+
+    def _process_batch_for_parallel(self, batch: List[Dict]) -> Tuple[int, int]:
+        """
+        为并行处理准备的批次处理方法。
+
+        返回:
+            Tuple[成功记录数, 失败记录数]
+        """
+        try:
+            success_count = 0
+            error_count = 0
+
+            # 处理批次（重用现有的AI处理方法）
+            if batch and not self.backfill_config.dry_run:
+                # 写入原始通知文本
+                try:
+                    self.postgres_writer.upsert_notification_text(batch)
+                    success_count += len(batch)
+                except Exception as e:
+                    logger.error(f"写入通知文本失败: {e}")
+                    error_count += len(batch)
+
+                # AI处理（如果启用）
+                if self.backfill_config.enable_ai_processing and self.openai_client:
+                    try:
+                        ai_results = self._process_batch_with_ai_extraction(batch)
+                        if ai_results:
+                            self.postgres_writer.upsert_ai_extracted_data(ai_results)
+                            success_count += len(ai_results)
+                    except Exception as e:
+                        logger.error(f"AI处理失败: {e}")
+                        error_count += len(batch)
+
+                # 嵌入生成（如果启用）
+                if self.backfill_config.enable_embeddings and self.embedding_pipeline:
+                    try:
+                        embeddings = self._process_batch_with_embeddings(batch)
+                        if embeddings:
+                            self.postgres_writer.upsert_semantic_embeddings(embeddings)
+                            success_count += len(embeddings)
+                    except Exception as e:
+                        logger.error(f"嵌入生成失败: {e}")
+                        error_count += len(batch)
+
+            return success_count, error_count
+
+        except Exception as e:
+            logger.error(f"批次处理失败: {e}")
+            return 0, len(batch) if batch else 0
+
+    def optimize_database_writes(self):
+        """优化数据库写入性能"""
+        if not self.postgres_writer:
+            return
+
+        logger.info("优化数据库写入性能...")
+
+        # 这里可以添加数据库写入优化逻辑，例如：
+        # 1. 批量插入优化
+        # 2. 索引管理
+        # 3. 连接池优化
+        # 4. 事务批处理
+
+        # 示例：调整批量插入大小
+        optimal_batch_size = MemoryOptimizer.optimize_batch_size(
+            initial_batch_size=self.backfill_config.batch_size,
+            memory_usage_mb=50,  # 假设当前内存使用
+            max_memory_mb=self.backfill_config.max_memory_mb,
+        )
+
+        if optimal_batch_size != self.backfill_config.batch_size:
+            logger.info(
+                f"优化批量大小: {self.backfill_config.batch_size} -> {optimal_batch_size}"
+            )
+            self.backfill_config.batch_size = optimal_batch_size
+
+        logger.info("数据库写入优化完成")
