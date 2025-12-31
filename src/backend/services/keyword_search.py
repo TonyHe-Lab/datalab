@@ -52,18 +52,13 @@ class KeywordSearch:
         # Full-text search query with BM25 ranking
         query = f"""
         SELECT
-            noti_id,
+            notification_id as noti_id,
             sys_eq_id,
             noti_date,
             noti_text,
             ts_rank(to_tsvector('english', noti_text), plainto_tsquery('english', :query)) as relevance,
-            snippet(
-                to_tsvector('english', noti_text),
-                plainto_tsquery('english', :query),
-                '[Match]',
-                '...',
-                20
-            ) as snippet
+            ts_headline('english', noti_text, plainto_tsquery('english', :query),
+                'StartSel=[Match], StopSel=[/Match], MaxWords=35, MinWords=15') as snippet
         FROM notification_text
         WHERE to_tsvector('english', noti_text) @@ plainto_tsquery('english', :query)
         AND {where_clause}

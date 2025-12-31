@@ -21,18 +21,16 @@ async def test_calculate_mtbf_basic(db_session: AsyncSession) -> None:
     mock_result = MagicMock()
     mock_result.fetchall = MagicMock(
         return_value=[
-            ("EQ-001", 10, 30.5, 15.0, 45.0, 32.0),
+            ("EQ-001", "Bearing", 10, 30.5, 15.0, 45.0, 32.0, "2025-01-01", "2025-12-31"),
         ]
     )
 
-    with pytest.MagicMock() as mock_execute:
-        mock_execute.return_value = mock_result
-        db_session.execute = AsyncMock(return_value=mock_result)
+    db_session.execute = AsyncMock(return_value=mock_result)
 
-        results = await service.calculate_mtbf()
-        assert len(results) == 1
-        assert results[0]["equipment_id"] == "EQ-001"
-        assert results[0]["failure_count"] == 10
+    results = await service.calculate_mtbf()
+    assert len(results) == 1
+    assert results[0]["equipment_id"] == "EQ-001"
+    assert results[0]["failure_count"] == 10
 
 
 @pytest.mark.asyncio

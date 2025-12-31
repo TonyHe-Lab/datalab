@@ -9,35 +9,35 @@ import type {
 
 export const analyticsService = {
   async getSummary(params: AnalyticsQueryParams): Promise<DashboardSummary> {
-    const response = await api.get<DashboardSummary>('/api/analytics/summary', {
+    const response = await api.get<{success: boolean, data: DashboardSummary}>('/analytics/summary', {
       params,
     });
-    return response.data;
+    return response.data.data;
   },
 
   async getMTBF(params: AnalyticsQueryParams): Promise<MTBFDataPoint[]> {
-    const response = await api.get<MTBFDataPoint[]>('/api/analytics/mtbf', {
+    const response = await api.get<{success: boolean, data: MTBFDataPoint[]}>('/analytics/mtbf', {
       params,
     });
-    return response.data;
+    return response.data.data;
   },
 
   async getPareto(params: AnalyticsQueryParams): Promise<ParetoDataPoint[]> {
-    const response = await api.get<ParetoDataPoint[]>('/api/analytics/pareto', {
+    const response = await api.get<{success: boolean, data: ParetoDataPoint[]}>('/analytics/pareto', {
       params,
     });
-    return response.data;
+    return response.data.data;
   },
 
   async getFaultDistribution(
     params: AnalyticsQueryParams
   ): Promise<FaultDistributionPoint[]> {
-    const response = await api.get<FaultDistributionPoint[]>(
-      '/api/analytics/fault-distribution',
+    const response = await api.get<{success: boolean, data: FaultDistributionPoint[]}>(
+      '/analytics/fault-distribution',
       {
         params,
       }
     );
-    return response.data;
+    return response.data.data;
   },
 };

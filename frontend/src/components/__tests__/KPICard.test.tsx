@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import KPICard, { DashboardKPI } from '../KPICard';
+import { KPICard, DashboardKPI } from '../KPICard';
 import type { DashboardSummary } from '../../types/analytics';
 
 describe('KPICard', () => {

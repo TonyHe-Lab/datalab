@@ -61,13 +61,13 @@ class SemanticSearch:
         query = f"""
         SELECT
             se.notification_id,
-            nt.noti_id,
+            se.notification_id as noti_id,
             nt.sys_eq_id,
             nt.noti_date,
             nt.noti_text,
             1.0 / (61 + se.vector <=> :vector) as similarity
         FROM semantic_embeddings se
-        JOIN notification_text nt ON se.notification_id = nt.noti_id
+        JOIN notification_text nt ON se.notification_id = nt.notification_id
         WHERE {where_clause}
         ORDER BY se.vector <=> :vector ASC
         LIMIT :limit

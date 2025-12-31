@@ -4,6 +4,7 @@ Configuration and fixtures for backend tests.
 
 import asyncio
 import pytest
+import pytest_asyncio
 from typing import AsyncGenerator, Generator
 
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
@@ -29,7 +30,7 @@ TestAsyncSessionLocal = async_sessionmaker(
 Base = declarative_base()
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def db_session() -> AsyncGenerator[AsyncSession, None]:
     """
     Fixture for providing a database session for tests.

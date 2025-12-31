@@ -11,21 +11,21 @@ export default defineConfig({
     css: true,
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     testTimeout: 10000, // 10 second timeout for async tests
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'src/test/',
+        '*.config.ts',
+        '*.test.{ts,tsx}',
+        '*.spec.{ts,tsx}',
+      ],
+    },
   },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
-  },
-  coverage: {
-    provider: 'v8',
-    reporter: ['text', 'json', 'html'],
-    exclude: [
-      'node_modules/',
-      'src/test/',
-      '*.config.ts',
-      '*.test.{ts,tsx}',
-      '*.spec.{ts,tsx}',
-    ],
   },
 })

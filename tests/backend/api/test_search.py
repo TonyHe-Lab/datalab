@@ -28,7 +28,7 @@ async def test_hybrid_search_keyword_only() -> None:
         }
     ]
 
-    with patch("src.backend.services.search_service.SearchService") as mock_service:
+    with patch("src.backend.api.search.SearchService") as mock_service:
         instance = mock_service.return_value
         instance.hybrid_search = AsyncMock(
             return_value={
@@ -67,7 +67,7 @@ async def test_keyword_search() -> None:
         }
     ]
 
-    with patch("src.backend.services.search_service.SearchService") as mock_service:
+    with patch("src.backend.api.search.SearchService") as mock_service:
         instance = mock_service.return_value
         instance.keyword_only_search = AsyncMock(
             return_value={
@@ -97,12 +97,12 @@ async def test_search_with_filters() -> None:
     """
     mock_results = []
 
-    with patch("src.backend.services.search_service.SearchService") as mock_service:
+    with patch("src.backend.api.search.SearchService") as mock_service:
         instance = mock_service.return_value
-        instance.hybrid_search = AsyncMock(
+        instance.keyword_only_search = AsyncMock(
             return_value={
                 "success": True,
-                "query": "test query",
+                "query": "test",
                 "results": mock_results,
                 "metadata": {},
             }

@@ -35,7 +35,7 @@ export function KPICard({
     <Card
       hoverable
       loading={loading}
-      bodyStyle={{ paddingTop: '16px', paddingBottom: '16px' }}
+      styles={{ body: { paddingTop: '16px', paddingBottom: '16px' } }}
     >
       <Statistic
         title={
@@ -47,7 +47,7 @@ export function KPICard({
         value={displayValue}
         suffix={suffix}
         precision={precision}
-        valueStyle={{ color: '#3f8600' }}
+        styles={{ content: { color: '#3f8600' } }}
       />
     </Card>
   );

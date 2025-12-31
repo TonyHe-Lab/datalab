@@ -49,15 +49,15 @@ class AnalyticsService:
         if equipment_id:
             conditions.append(f"nt.sys_eq_id = '{equipment_id}'")
         if component:
-            conditions.append(f"aed.failed_component = '{component}'")
+            conditions.append(f"aed.main_component_ai = '{component}'")
 
         where_clause = " AND ".join(conditions) if conditions else "1=1"
 
         # Join condition for component filtering
         join_clause = (
-            "JOIN ai_extracted_data aed ON nt.id = aed.notification_id"
+            "JOIN ai_extracted_data aed ON nt.notification_id = aed.notification_id"
             if component
-            else "LEFT JOIN ai_extracted_data aed ON nt.id = aed.notification_id"
+            else "LEFT JOIN ai_extracted_data aed ON nt.notification_id = aed.notification_id"
         )
 
         # MTBF calculation query with rolling averages if specified
@@ -69,7 +69,7 @@ class AnalyticsService:
                     nt.sys_eq_id as equipment_id,
                     nt.noti_date as failure_date,
                     LAG(nt.noti_date) OVER (PARTITION BY nt.sys_eq_id ORDER BY nt.noti_date) as prev_failure_date,
-                    COALESCE(aed.failed_component, 'Unknown') as failed_component
+                    COALESCE(aed.main_component_ai, 'Unknown') as failed_component
                 FROM notification_text nt
                 {join_clause}
                 WHERE {where_clause}
@@ -121,7 +121,7 @@ class AnalyticsService:
                     nt.sys_eq_id as equipment_id,
                     nt.noti_date as failure_date,
                     LAG(nt.noti_date) OVER (PARTITION BY nt.sys_eq_id ORDER BY nt.noti_date) as prev_failure_date,
-                    COALESCE(aed.failed_component, 'Unknown') as failed_component
+                    COALESCE(aed.main_component_ai, 'Unknown') as failed_component
                 FROM notification_text nt
                 {join_clause}
                 WHERE {where_clause}
@@ -214,29 +214,29 @@ class AnalyticsService:
         # Pareto analysis query
         query = f"""
         WITH symptom_counts AS (
-            SELECT 
-                symptom_ai,
+            SELECT
+                primary_symptom_ai as symptom,
                 COUNT(*) as occurrence_count
             FROM ai_extracted_data
             WHERE {where_clause}
-            GROUP BY symptom_ai
-            HAVING symptom_ai IS NOT NULL AND symptom_ai != ''
+            GROUP BY primary_symptom_ai
+            HAVING primary_symptom_ai IS NOT NULL AND primary_symptom_ai != ''
         ),
         total_counts AS (
             SELECT SUM(occurrence_count) as total_count
             FROM symptom_counts
         ),
         ranked_symptoms AS (
-            SELECT 
-                sc.symptom_ai,
+            SELECT
+                sc.symptom,
                 sc.occurrence_count,
                 ROW_NUMBER() OVER (ORDER BY sc.occurrence_count DESC) as rank,
                 ROUND(sc.occurrence_count * 100.0 / tc.total_count, 2) as percentage
             FROM symptom_counts sc
             CROSS JOIN total_counts tc
         )
-        SELECT 
-            symptom_ai,
+        SELECT
+            symptom,
             occurrence_count,
             percentage,
             rank

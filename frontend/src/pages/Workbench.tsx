@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Layout, Typography } from 'antd';
+import { Row, Col, Typography } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import DiagnosisInput from '../components/DiagnosisInput';
 import DiagnosisResult from '../components/DiagnosisResult';
@@ -7,7 +7,6 @@ import ReferenceCases from '../components/ReferenceCases';
 import { chatService, searchService } from '../services/chat';
 import type { DiagnosisResponse } from '../types/api';
 
-const { Content, Sider } = Layout;
 const { Title } = Typography;
 
 export default function WorkbenchPage() {
@@ -36,15 +35,19 @@ export default function WorkbenchPage() {
       <Title level={2} style={{ marginBottom: '24px' }}>
         Diagnostic Workbench
       </Title>
-      <Layout style={{ background: '#fff', minHeight: '600px', borderRadius: '8px' }}>
-        <Content style={{ padding: '24px', width: '60%' }}>
-          <DiagnosisInput onDiagnose={handleDiagnose} />
-          <DiagnosisResult diagnosis={diagnosis} />
-        </Content>
-        <Sider width="40%" style={{ background: '#fafafa', padding: '24px' }}>
-          <ReferenceCases cases={referenceCases} loading={isLoadingReferences} />
-        </Sider>
-      </Layout>
+      <div style={{ background: '#fff', minHeight: '600px', borderRadius: '8px', padding: '24px' }}>
+        <Row gutter={24}>
+          <Col span={14}>
+            <DiagnosisInput onDiagnose={handleDiagnose} />
+            <DiagnosisResult diagnosis={diagnosis} />
+          </Col>
+          <Col span={10}>
+            <div style={{ background: '#fafafa', padding: '24px', borderRadius: '8px', height: '100%' }}>
+              <ReferenceCases cases={referenceCases} loading={isLoadingReferences} />
+            </div>
+          </Col>
+        </Row>
+      </div>
     </div>
   );
 }
