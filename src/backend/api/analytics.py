@@ -174,3 +174,149 @@ async def get_analytics_summary(
         raise HTTPException(
             status_code=500, detail=f"Error getting analytics summary: {str(e)}"
         )
+
+
+@router.get("/mtbf/visualization")
+async def get_mtbf_visualization(
+    start_date: Optional[date] = Query(None, description="Start date for analysis"),
+    end_date: Optional[date] = Query(None, description="End date for analysis"),
+    equipment_id: Optional[str] = Query(None, description="Filter by equipment ID"),
+    component: Optional[str] = Query(None, description="Filter by component"),
+    limit: int = Query(15, ge=1, le=100, description="Maximum results to return"),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Get MTBF data formatted for visualization (charts and graphs).
+
+    Returns MTBF analysis with chart-ready data structures.
+    """
+    try:
+        service = AnalyticsService(db)
+        results = await service.get_mtbf_for_visualization(
+            start_date=start_date,
+            end_date=end_date,
+            equipment_id=equipment_id,
+            component=component,
+            limit=limit,
+        )
+
+        return {
+            "success": True,
+            "data": results,
+            "metadata": {
+                "start_date": start_date,
+                "end_date": end_date,
+                "equipment_id": equipment_id,
+                "component": component,
+                "chart_types": ["bar_chart", "detailed_view"],
+            },
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error getting MTBF visualization: {str(e)}"
+        )
+
+
+@router.get("/pareto/visualization")
+async def get_pareto_visualization(
+    start_date: Optional[date] = Query(None, description="Start date for analysis"),
+    end_date: Optional[date] = Query(None, description="End date for analysis"),
+    limit: int = Query(10, ge=1, le=50, description="Number of top items to return"),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Get Pareto analysis formatted for visualization (charts and graphs).
+
+    Returns Pareto analysis with multiple chart-ready data structures (bar, pie, Pareto chart).
+    """
+    try:
+        service = AnalyticsService(db)
+        results = await service.get_pareto_for_visualization(
+            start_date=start_date,
+            end_date=end_date,
+            limit=limit,
+        )
+
+        return {
+            "success": True,
+            "data": results,
+            "metadata": {
+                "start_date": start_date,
+                "end_date": end_date,
+                "limit": limit,
+                "chart_types": ["bar_chart", "pie_chart", "pareto_chart"],
+            },
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error getting Pareto visualization: {str(e)}"
+        )
+
+
+@router.get("/dashboard")
+async def get_analytics_dashboard(
+    start_date: Optional[date] = Query(None, description="Start date for analysis"),
+    end_date: Optional[date] = Query(None, description="End date for analysis"),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Get comprehensive analytics data for dashboard.
+
+    Returns all analytics data (MTBF, Pareto, Equipment Health) aggregated for dashboard display.
+    """
+    try:
+        service = AnalyticsService(db)
+        results = await service.get_analytics_dashboard_data(
+            start_date=start_date,
+            end_date=end_date,
+        )
+
+        return {
+            "success": True,
+            "data": results,
+            "metadata": {
+                "start_date": start_date,
+                "end_date": end_date,
+                "components": ["mtbf", "pareto", "equipment_health"],
+            },
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error getting dashboard data: {str(e)}"
+        )
+
+
+@router.post("/refresh-views")
+async def refresh_analytics_views(
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Refresh all analytics materialized views.
+
+    Refreshes materialized views to ensure analytics data is up-to-date.
+    This endpoint should be called periodically or after data updates.
+    """
+    try:
+        service = AnalyticsService(db)
+        results = await service.refresh_materialized_views()
+
+        if not results["success"]:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Error refreshing views: {results.get('error')}",
+            )
+
+        return {
+            "success": True,
+            "data": results,
+            "metadata": {
+                "refreshed_at": results["timestamp"],
+                "view_count": len(results["refreshed_views"]),
+            },
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error refreshing analytics views: {str(e)}"
+        )
