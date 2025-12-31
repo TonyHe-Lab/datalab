@@ -2,30 +2,32 @@
 Configuration management for the FastAPI application.
 """
 
-import os
-from typing import Optional
-
-from pydantic import Field
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
     """Application settings."""
 
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=True,
+        extra="ignore",  # Ignore extra environment variables
+    )
+
     # Application
     APP_NAME: str = "Medical Work Order Analysis API"
-    DEBUG: bool = Field(default=False, env="DEBUG")
-    HOST: str = Field(default="0.0.0.0", env="HOST")
-    PORT: int = Field(default=8000, env="PORT")
+    DEBUG: bool = False
+    HOST: str = "0.0.0.0"
+    PORT: int = 8000
 
     # Database
-    DB_HOST: str = Field(default="localhost", env="DB_HOST")
-    DB_PORT: int = Field(default=5432, env="DB_PORT")
-    DB_NAME: str = Field(default="medical_ai_ops", env="DB_NAME")
-    DB_USER: str = Field(default="postgres", env="DB_USER")
-    DB_PASSWORD: str = Field(default="", env="DB_PASSWORD")
-    DB_POOL_SIZE: int = Field(default=20, env="DB_POOL_SIZE")
-    DB_MAX_OVERFLOW: int = Field(default=10, env="DB_MAX_OVERFLOW")
+    DB_HOST: str = "localhost"
+    DB_PORT: int = 5432
+    DB_NAME: str = "medical_ai_ops"
+    DB_USER: str = "postgres"
+    DB_PASSWORD: str = ""
+    DB_POOL_SIZE: int = 20
+    DB_MAX_OVERFLOW: int = 10
 
     # Database URL
     @property
@@ -37,17 +39,11 @@ class Settings(BaseSettings):
     API_V1_PREFIX: str = "/api/v1"
 
     # Security
-    SECRET_KEY: str = Field(default="your-secret-key-here", env="SECRET_KEY")
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(
-        default=30, env="ACCESS_TOKEN_EXPIRE_MINUTES"
-    )
+    SECRET_KEY: str = "your-secret-key-here"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
     # CORS
-    CORS_ORIGINS: list[str] = Field(default=["*"], env="CORS_ORIGINS")
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    CORS_ORIGINS: list[str] = ["*"]
 
 
 # Global settings instance
