@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.backend.core.config import settings
 from src.backend.db.session import init_db
-from src.backend.api import health, metadata, analytics, search
+from src.backend.api import health, metadata, analytics, search, chat
 
 # Configure logging
 logging.basicConfig(
@@ -56,6 +56,7 @@ app.include_router(health.router, prefix="/api", tags=["health"])
 app.include_router(metadata.router, prefix="/api", tags=["metadata"])
 app.include_router(analytics.router, prefix="/api", tags=["analytics"])
 app.include_router(search.router, prefix="/api", tags=["search"])
+app.include_router(chat.router, prefix="/api", tags=["chat"])
 
 
 @app.get("/")

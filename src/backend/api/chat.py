@@ -28,6 +28,7 @@ async def chat_endpoint(
         chat_service = ChatService(
             db=db,
             context_limit=request.context_limit,
+            similarity_threshold=0.6,
         )
 
         # Process chat request

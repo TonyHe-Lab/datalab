@@ -68,6 +68,7 @@ class ChatService:
         self.context_retriever = RAGContextRetriever(
             search_service=self.search_service,
             context_limit=context_limit,
+            similarity_threshold=similarity_threshold,
         )
         self.prompt_engineer = PromptEngineer(
             context_limit=context_limit,
