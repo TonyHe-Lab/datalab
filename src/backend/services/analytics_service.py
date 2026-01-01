@@ -162,22 +162,19 @@ class AnalyticsService:
                     "failed_component": row[1],
                     "failure_count": row[2],
                     "avg_mtbf_days": float(row[3]) if row[3] else None,
-                    "rolling_avg_mtbf_days": float(row[4])
-                    if rolling_days and row[4]
-                    else None,
-                    "min_mtbf_days": float(row[5]) if row[5] else None,
-                    "max_mtbf_days": float(row[6]) if row[6] else None,
-                    "median_mtbf_days": float(row[7]) if row[7] else None,
+                    "min_mtbf_days": float(row[4]) if row[4] else None,
+                    "max_mtbf_days": float(row[5]) if row[5] else None,
+                    "median_mtbf_days": float(row[6]) if row[6] else None,
                     "first_failure_date": None
+                    if not row[7]
+                    else row[7].isoformat()
+                    if hasattr(row[7], "isoformat")
+                    else str(row[7]),
+                    "last_failure_date": None
                     if not row[8]
                     else row[8].isoformat()
                     if hasattr(row[8], "isoformat")
                     else str(row[8]),
-                    "last_failure_date": None
-                    if not row[9]
-                    else row[9].isoformat()
-                    if hasattr(row[9], "isoformat")
-                    else str(row[9]),
                 }
                 for row in rows
             ]

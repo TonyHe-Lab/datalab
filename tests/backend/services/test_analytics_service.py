@@ -69,8 +69,8 @@ async def test_calculate_pareto_basic(db_session: AsyncSession) -> None:
     mock_result = MagicMock()
     mock_result.fetchall = MagicMock(
         return_value=[
-            ("Bearing", 50, 30.0, 30.0),
-            ("Motor", 40, 24.0, 54.0),
+            ("Bearing", 50, 30.0, 1),
+            ("Motor", 40, 24.0, 2),
         ]
     )
 
@@ -79,10 +79,10 @@ async def test_calculate_pareto_basic(db_session: AsyncSession) -> None:
     results = await service.calculate_pareto(limit=10)
 
     assert len(results) == 2
-    assert results[0]["component"] == "Bearing"
-    assert results[0]["count"] == 50
+    assert results[0]["symptom"] == "Bearing"
+    assert results[0]["occurrence_count"] == 50
     assert results[0]["percentage"] == 30.0
-    assert results[0]["cumulative"] == 30.0
+    assert results[0]["cumulative_percentage"] == 30.0
 
 
 @pytest.mark.asyncio

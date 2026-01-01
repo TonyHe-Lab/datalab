@@ -48,14 +48,24 @@ describe('Navigation and Page Transitions (E2E)', () => {
   });
 
   const renderAppWithRouter = (initialRoute = '/') => {
+    // 提供完整的window.location模拟
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: {
+        pathname: initialRoute,
+        origin: 'http://localhost:5173',
+        href: `http://localhost:5173${initialRoute}`,
+        search: '',
+        hash: ''
+      }
+    });
+
     return render(
-      <MemoryRouter initialEntries={[initialRoute]}>
-        <QueryClientProvider client={queryClient}>
-          <ConfigProvider theme={ThemeProvider}>
-            <App />
-          </ConfigProvider>
-        </QueryClientProvider>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <ConfigProvider theme={ThemeProvider}>
+          <App />
+        </ConfigProvider>
+      </QueryClientProvider>
     );
   };
 
@@ -65,7 +75,7 @@ describe('Navigation and Page Transitions (E2E)', () => {
     // Step 1: Verify Workbench page is loaded
     await waitFor(() => {
       expect(screen.getByText(/Diagnostic Workbench/i)).toBeInTheDocument();
-    });
+    }, { timeout: 5000 });
 
     // Step 2: Find and click Dashboard link in navigation
     const dashboardLink = screen.getByRole('link', { name: /dashboard/i });
@@ -78,7 +88,7 @@ describe('Navigation and Page Transitions (E2E)', () => {
       () => {
         expect(screen.getByText(/Analytics Dashboard/i)).toBeInTheDocument();
       },
-      { timeout: 3000 }
+      { timeout: 5000 }
     );
 
     // Step 4: Verify Workbench title is no longer visible

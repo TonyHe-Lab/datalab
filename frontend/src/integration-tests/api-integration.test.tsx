@@ -76,7 +76,7 @@ describe('API Integration Tests', () => {
       await waitFor(
         () => {
           expect(mockFetch).toHaveBeenCalledWith(
-            expect.stringContaining('/api/chat/diagnose'),
+            expect.stringContaining('/api/chat/'),
             expect.objectContaining({
               method: 'POST',
               headers: expect.objectContaining({

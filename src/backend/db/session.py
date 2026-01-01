@@ -50,7 +50,8 @@ async def test_connection():
     try:
         async with AsyncSessionLocal() as session:
             # Simple query to test connection
-            result = await session.execute("SELECT 1")
+            from sqlalchemy import text
+            result = await session.execute(text("SELECT 1"))
             return result.scalar() == 1
     except Exception as e:
         print(f"Database connection error: {e}")

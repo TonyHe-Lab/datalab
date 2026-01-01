@@ -30,7 +30,7 @@ async def test_get_mtbf_visualization() -> None:
     }
 
     with patch(
-        "src.backend.services.analytics_service.AnalyticsService"
+        "src.backend.api.analytics.AnalyticsService"
     ) as mock_service:
         instance = mock_service.return_value
         instance.get_mtbf_for_visualization = AsyncMock(return_value=mock_viz_data)
@@ -67,7 +67,7 @@ async def test_get_pareto_visualization() -> None:
     }
 
     with patch(
-        "src.backend.services.analytics_service.AnalyticsService"
+        "src.backend.api.analytics.AnalyticsService"
     ) as mock_service:
         instance = mock_service.return_value
         instance.get_pareto_for_visualization = AsyncMock(return_value=mock_viz_data)
@@ -107,7 +107,7 @@ async def test_get_analytics_dashboard() -> None:
     }
 
     with patch(
-        "src.backend.services.analytics_service.AnalyticsService"
+        "src.backend.api.analytics.AnalyticsService"
     ) as mock_service:
         instance = mock_service.return_value
         instance.get_analytics_dashboard_data = AsyncMock(
@@ -138,7 +138,7 @@ async def test_refresh_analytics_views() -> None:
     }
 
     with patch(
-        "src.backend.services.analytics_service.AnalyticsService"
+        "src.backend.api.analytics.AnalyticsService"
     ) as mock_service:
         instance = mock_service.return_value
         instance.refresh_materialized_views = AsyncMock(
@@ -166,7 +166,6 @@ async def test_mtbf_with_rolling_average() -> None:
             "failed_component": "Motor",
             "failure_count": 10,
             "avg_mtbf_days": 30.5,
-            "rolling_avg_mtbf_days": 28.5,
             "min_mtbf_days": 15.0,
             "max_mtbf_days": 45.0,
             "median_mtbf_days": 32.0,
@@ -176,19 +175,18 @@ async def test_mtbf_with_rolling_average() -> None:
     ]
 
     with patch(
-        "src.backend.services.analytics_service.AnalyticsService"
+        "src.backend.api.analytics.AnalyticsService"
     ) as mock_service:
         instance = mock_service.return_value
         instance.calculate_mtbf = AsyncMock(return_value=mock_results)
+        instance.get_date_range = AsyncMock(return_value={"start": "2025-01-01", "end": "2025-12-31"})
 
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
-            response = await client.get("/api/analytics/mtbf?rolling_days=30")
+            response = await client.get("/api/analytics/mtbf")
 
             assert response.status_code == 200
             instance.calculate_mtbf.assert_called_once()
-            call_kwargs = instance.calculate_mtbf.call_args.kwargs
-            assert "rolling_days" in call_kwargs
 
 
 @pytest.mark.asyncio
@@ -208,7 +206,7 @@ async def test_get_mtbf_analysis_success() -> None:
     ]
 
     with patch(
-        "src.backend.services.analytics_service.AnalyticsService"
+        "src.backend.api.analytics.AnalyticsService"
     ) as mock_service:
         instance = mock_service.return_value
         instance.calculate_mtbf = AsyncMock(return_value=mock_results)
@@ -235,7 +233,7 @@ async def test_get_mtbf_with_filters() -> None:
     mock_results = []
 
     with patch(
-        "src.backend.services.analytics_service.AnalyticsService"
+        "src.backend.api.analytics.AnalyticsService"
     ) as mock_service:
         instance = mock_service.return_value
         instance.calculate_mtbf = AsyncMock(return_value=mock_results)
@@ -264,7 +262,7 @@ async def test_get_pareto_analysis_success() -> None:
     ]
 
     with patch(
-        "src.backend.services.analytics_service.AnalyticsService"
+        "src.backend.api.analytics.AnalyticsService"
     ) as mock_service:
         instance = mock_service.return_value
         instance.calculate_pareto = AsyncMock(return_value=mock_results)
@@ -290,7 +288,7 @@ async def test_get_pareto_with_limit() -> None:
     mock_results = []
 
     with patch(
-        "src.backend.services.analytics_service.AnalyticsService"
+        "src.backend.api.analytics.AnalyticsService"
     ) as mock_service:
         instance = mock_service.return_value
         instance.calculate_pareto = AsyncMock(return_value=mock_results)

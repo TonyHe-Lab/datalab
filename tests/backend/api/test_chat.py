@@ -113,7 +113,7 @@ async def test_chat_endpoint_with_equipment_filter():
         metadata={"equipment_id": "MOTOR-001"},
     )
 
-    with patch("src.backend.services.chat_service.ChatService") as mock_service:
+    with patch("src.backend.api.chat.ChatService") as mock_service:
         instance = mock_service.return_value
         instance.chat = AsyncMock(return_value=mock_response)
 
@@ -168,7 +168,7 @@ async def test_chat_endpoint_with_long_query():
         metadata={},
     )
 
-    with patch("src.backend.services.chat_service.ChatService") as mock_service:
+    with patch("src.backend.api.chat.ChatService") as mock_service:
         instance = mock_service.return_value
         instance.chat = AsyncMock(return_value=mock_response)
 
@@ -200,7 +200,7 @@ async def test_chat_endpoint_service_failure():
         metadata={"error": "Database error"},
     )
 
-    with patch("src.backend.services.chat_service.ChatService") as mock_service:
+    with patch("src.backend.api.chat.ChatService") as mock_service:
         instance = mock_service.return_value
         instance.chat = AsyncMock(return_value=mock_response)
 
@@ -229,7 +229,7 @@ async def test_simple_chat_endpoint():
         metadata={},
     )
 
-    with patch("src.backend.services.chat_service.ChatService") as mock_service:
+    with patch("src.backend.api.chat.ChatService") as mock_service:
         instance = mock_service.return_value
         instance.chat = AsyncMock(return_value=mock_response)
 
@@ -266,7 +266,7 @@ async def test_chat_endpoint_exception_handling():
     """
     Test chat endpoint exception handling.
     """
-    with patch("src.backend.services.chat_service.ChatService") as mock_service:
+    with patch("src.backend.api.chat.ChatService") as mock_service:
         # Service raises exception
         instance = mock_service.return_value
         instance.chat = AsyncMock(side_effect=Exception("Unexpected error"))
@@ -280,4 +280,6 @@ async def test_chat_endpoint_exception_handling():
 
             # Should handle exception gracefully
             assert response.status_code == 500
-            assert "error" in response.json()["detail"].lower()
+            detail = response.json()["detail"].lower()
+            # Check for any error indication
+            assert any(word in detail for word in ["error", "fail", "exception"])

@@ -7,7 +7,8 @@ from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.backend.main import app
-from src.backend.db.session import test_connection
+# Import for mocking
+import src.backend.db.session as db_session_module
 
 
 @pytest.mark.asyncio
