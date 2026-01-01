@@ -11,10 +11,26 @@ import { ConfigProvider } from 'antd';
 import { ThemeProvider } from '../theme';
 import Workbench from '../pages/Workbench';
 
-// Setup MSW-like mocking for API calls
-const mockFetch = vi.fn();
+// Mock axios at module level using vi.hoisted
+const { mockAxios } = vi.hoisted(() => {
+  const mockAxios = vi.fn();
+  return { mockAxios };
+});
 
-globalThis.fetch = mockFetch as any;
+vi.mock('axios', () => {
+  return {
+    default: {
+      create: vi.fn(() => ({
+        post: mockAxios,
+        get: mockAxios,
+        interceptors: {
+          request: { use: vi.fn() },
+          response: { use: vi.fn() },
+        },
+      })),
+    },
+  };
+});
 
 describe('API Integration Tests', () => {
   let queryClient: QueryClient;
@@ -29,7 +45,7 @@ describe('API Integration Tests', () => {
       },
     });
 
-    mockFetch.mockClear();
+    mockAxios.mockClear();
   });
 
   afterEach(() => {
@@ -60,9 +76,8 @@ describe('API Integration Tests', () => {
         },
       };
 
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockResponse,
+      mockAxios.mockResolvedValueOnce({
+        data: mockResponse,
       });
 
       renderComponent();
@@ -75,14 +90,10 @@ describe('API Integration Tests', () => {
 
       await waitFor(
         () => {
-          expect(mockFetch).toHaveBeenCalledWith(
-            expect.stringContaining('/api/chat/'),
+          expect(mockAxios).toHaveBeenCalledWith(
+            '/chat',
             expect.objectContaining({
-              method: 'POST',
-              headers: expect.objectContaining({
-                'Content-Type': 'application/json',
-              }),
-              body: expect.stringContaining('Equipment not powering on'),
+              query: 'Equipment not powering on',
             })
           );
         },
@@ -91,13 +102,14 @@ describe('API Integration Tests', () => {
     });
 
     it('should handle chat API error responses', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        status: 500,
-        json: async () => ({
-          success: false,
-          error: 'Internal server error',
-        }),
+      mockAxios.mockRejectedValueOnce({
+        response: {
+          status: 500,
+          data: {
+            success: false,
+            error: 'Internal server error',
+          },
+        },
       });
 
       renderComponent();
@@ -110,25 +122,23 @@ describe('API Integration Tests', () => {
 
       await waitFor(
         () => {
-          expect(mockFetch).toHaveBeenCalled();
+          expect(mockAxios).toHaveBeenCalled();
         },
         { timeout: 3000 }
       );
     });
 
     it('should test retry logic for failed chat requests', async () => {
-      mockFetch
-        .mockRejectedValueOnce(new Error('Network error'))
+      mockAxios
         .mockRejectedValueOnce(new Error('Network error'))
         .mockResolvedValueOnce({
-          ok: true,
-          json: async () => ({
+          data: {
             success: true,
             data: {
               answer: 'Test response',
               sources: [],
             },
-          }),
+          },
         });
 
       // Note: React Query retry behavior is configured with retry: 1 in app
@@ -143,7 +153,7 @@ describe('API Integration Tests', () => {
 
       await waitFor(
         () => {
-          expect(mockFetch).toHaveBeenCalledTimes(3); // Initial + 2 retries
+          expect(mockAxios).toHaveBeenCalledTimes(2); // Initial + 1 retry
         },
         { timeout: 5000 }
       );
@@ -160,34 +170,31 @@ describe('API Integration Tests', () => {
         },
       };
 
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockSummaryResponse,
+      mockAxios.mockResolvedValueOnce({
+        data: mockSummaryResponse,
       });
 
       // Direct API call test
-      await fetch('/api/analytics/summary?start_date=2024-01-01&end_date=2024-12-31');
+      await mockAxios('/api/analytics/summary?start_date=2024-01-01&end_date=2024-12-31');
 
-      expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/analytics/summary'),
-        expect.objectContaining({
-          method: 'GET',
-        })
+      expect(mockAxios).toHaveBeenCalledWith(
+        '/api/analytics/summary?start_date=2024-01-01&end_date=2024-12-31'
       );
     });
 
     it('should handle analytics API error gracefully', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        status: 400,
-        json: async () => ({
-          success: false,
-          error: 'Invalid date range',
-        }),
+      mockAxios.mockRejectedValueOnce({
+        response: {
+          status: 400,
+          data: {
+            success: false,
+            error: 'Invalid date range',
+          },
+        },
       });
 
       try {
-        await fetch('/api/analytics/summary?start_date=invalid');
+        await mockAxios('/api/analytics/summary?start_date=invalid');
       } catch (error) {
         // Error is expected
         expect(true).toBe(true);
@@ -203,17 +210,13 @@ describe('API Integration Tests', () => {
       ];
 
       for (const endpoint of endpoints) {
-        mockFetch.mockResolvedValueOnce({
-          ok: true,
-          json: async () => ({ success: true, data: {} }),
+        mockAxios.mockResolvedValueOnce({
+          data: { success: true, data: {} },
         });
 
-        await fetch(endpoint);
+        await mockAxios(endpoint);
 
-        expect(mockFetch).toHaveBeenCalledWith(
-          expect.stringContaining(endpoint),
-          expect.any(Object)
-        );
+        expect(mockAxios).toHaveBeenCalledWith(endpoint);
       }
     });
   });
@@ -231,48 +234,47 @@ describe('API Integration Tests', () => {
         ],
       };
 
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockSearchResponse,
+      mockAxios.mockResolvedValueOnce({
+        data: mockSearchResponse,
       });
 
-      await fetch('/api/search/similar?query=power%20supply');
+      await mockAxios('/api/search/similar?query=power%20supply');
 
-      expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/search/similar'),
-        expect.objectContaining({
-          method: 'GET',
-        })
+      expect(mockAxios).toHaveBeenCalledWith(
+        '/api/search/similar?query=power%20supply'
       );
     });
 
     it('should handle empty search results', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
+      mockAxios.mockResolvedValueOnce({
+        data: {
           success: true,
           data: [],
-        }),
+        },
       });
 
-      const response = await fetch('/api/search/similar?query=unique');
+      const response = await mockAxios('/api/search/similar?query=unique');
 
-      expect(response.ok).toBe(true);
+      expect(response.data.success).toBe(true);
     });
 
     it('should test search API error handling', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        status: 404,
-        json: async () => ({
-          success: false,
-          error: 'No results found',
-        }),
+      mockAxios.mockRejectedValueOnce({
+        response: {
+          status: 404,
+          data: {
+            success: false,
+            error: 'No results found',
+          },
+        },
       });
 
-      const response = await fetch('/api/search/similar?query=test');
-
-      expect(response.ok).toBe(false);
+      try {
+        await mockAxios('/api/search/similar?query=test');
+      } catch (error) {
+        // Error is expected
+        expect(true).toBe(true);
+      }
     });
   });
 
@@ -294,11 +296,10 @@ describe('API Integration Tests', () => {
       };
 
       let callCount = 0;
-      mockFetch.mockImplementation(() => {
+      mockAxios.mockImplementation(() => {
         callCount++;
         return Promise.resolve({
-          ok: true,
-          json: async () => (callCount % 2 === 1 ? chatResponse : searchResponse),
+          data: callCount % 2 === 1 ? chatResponse : searchResponse,
         });
       });
 
@@ -312,20 +313,24 @@ describe('API Integration Tests', () => {
 
       await waitFor(
         () => {
-          expect(mockFetch).toHaveBeenCalledTimes(2); // Chat + Search
+          expect(mockAxios).toHaveBeenCalledTimes(2); // Chat + Search
         },
         { timeout: 5000 }
       );
 
       // Verify both endpoints were called
-      expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/chat/'),
-        expect.any(Object)
+      expect(mockAxios).toHaveBeenCalledWith(
+        '/chat',
+        expect.objectContaining({
+          query: 'Test fault',
+        })
       );
 
-      expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/search/'),
-        expect.any(Object)
+      expect(mockAxios).toHaveBeenCalledWith(
+        '/search',
+        expect.objectContaining({
+          params: { query: 'Test fault' },
+        })
       );
     });
   });
@@ -344,18 +349,17 @@ describe('API Integration Tests', () => {
         },
       };
 
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => response,
+      mockAxios.mockResolvedValueOnce({
+        data: response,
       });
 
-      const result = await mockFetch('/api/chat/diagnose', {
+      const result = await mockAxios('/api/chat/diagnose', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: 'test' }),
+        data: { query: 'test' },
       });
 
-      const data = await result.json();
+      const data = result.data;
       expect(data.success).toBe(true);
       expect(data.data).toHaveProperty('answer');
       expect(data.data).toHaveProperty('resolution_steps');
@@ -371,13 +375,12 @@ describe('API Integration Tests', () => {
         },
       };
 
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => response,
+      mockAxios.mockResolvedValueOnce({
+        data: response,
       });
 
-      const result = await mockFetch('/api/analytics/summary');
-      const data = await result.json();
+      const result = await mockAxios('/api/analytics/summary');
+      const data = result.data;
 
       expect(data.success).toBe(true);
       expect(data.data).toHaveProperty('total_metrics');
@@ -387,26 +390,25 @@ describe('API Integration Tests', () => {
 
   describe('API Performance and Timeout (AC: 4)', () => {
     it('should handle slow API responses', async () => {
-      mockFetch.mockImplementation(
+      mockAxios.mockImplementation(
         () =>
           new Promise((resolve) => {
             setTimeout(() => {
               resolve({
-                ok: true,
-                json: async () => ({
+                data: {
                   success: true,
                   data: { answer: 'Response' },
-                }),
+                },
               });
             }, 1000); // 1 second delay
           })
       );
 
       const startTime = Date.now();
-      await fetch('/api/chat/diagnose', {
+      await mockAxios('/api/chat/diagnose', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: 'test' }),
+        data: { query: 'test' },
       });
 
       const endTime = Date.now();
