@@ -5,7 +5,9 @@
 source venv/bin/activate
 
 # Set environment variables
-export PYTHONPATH=/home/tonyhe/TonyHe-Gitlab/datalab:$PYTHONPATH
+# Use script directory for PYTHONPATH (portable, no hardcoded paths)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export PYTHONPATH="$SCRIPT_DIR:${PYTHONPATH:-}"
 
 # Start FastAPI application
 echo "Starting Medical Work Order Analysis API..."

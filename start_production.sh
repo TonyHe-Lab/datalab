@@ -16,7 +16,9 @@ else
 fi
 
 # Set environment variables for production
-export PYTHONPATH=/home/tonyhe/TonyHe-Gitlab/datalab:$PYTHONPATH
+# Use script directory for PYTHONPATH (portable, no hardcoded paths)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export PYTHONPATH="$SCRIPT_DIR:${PYTHONPATH:-}"
 export DEBUG=False
 
 echo ""
@@ -33,4 +35,4 @@ echo "Press Ctrl+C to stop the server"
 echo ""
 
 # Start the FastAPI application with uvicorn for production
-uvicorn src.backend.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn src.backend.main:app --host 0.0.0.0 --port 8000

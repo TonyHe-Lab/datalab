@@ -76,5 +76,7 @@ echo ""
 echo "Press Ctrl+C to stop the application"
 
 # Run the application
-export PYTHONPATH=/home/tonyhe/TonyHe-Gitlab/datalab:$PYTHONPATH
+# Use script directory for PYTHONPATH (portable, no hardcoded paths)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export PYTHONPATH="$SCRIPT_DIR:${PYTHONPATH:-}"
 python -m src.backend.main
